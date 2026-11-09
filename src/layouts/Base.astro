@@ -1,0 +1,111 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import config from '../data/portfolio.config.ts';
+import { generatedAt } from '../lib/projects.ts';
+import { t, homePath, other, formatDate, type Lang } from '../i18n/index.ts';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** Path of this same page in the other language. */
+  altPath: string;
+  image?: string | null;
+}
+const { lang, title, description, altPath, image } = Astro.props;
+const d = t(lang);
+const fullTitle = title ? `${title} · Krum (Krumqnkata)` : d.siteTitle;
+const desc = description || d.siteDescription;
+const canonical = new URL(Astro.url.pathname, config.siteUrl).href;
+const alternate = new URL(altPath, config.siteUrl).href;
+const home = homePath(lang);
+const ogImage = image || 'https://raw.githubusercontent.com/Krumqnkata/Krumqnkata/main/assets/header.svg';
+---
+<!doctype html>
+<html lang={d.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={lang} href={canonical} />
+    <link rel="alternate" hreflang={other(lang)} href={alternate} />
+    <link rel="alternate" hreflang="x-default" href={new URL(lang === 'en' ? Astro.url.pathname : altPath, config.siteUrl).href} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0a1424" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f5f8fc" media="(prefers-color-scheme: light)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'bg' ? 'bg_BG' : 'en_GB'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script is:inline>
+      (function () {
+        var theme;
+        try { theme = localStorage.getItem('theme'); } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">{lang === 'bg' ? 'Към съдържанието' : 'Skip to content'}</a>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={home}>
+          <img src="/favicon.svg" alt="" width="30" height="30" />
+          <span>Krum<small>@krumqnkata</small></span>
+        </a>
+        <nav class="nav" aria-label="Main">
+          <a href={`${home}#projects`}>{d.nav.projects}</a>
+          <a href={`${home}#about`}>{d.nav.about}</a>
+          <a href={`${home}#activity`}>{d.nav.activity}</a>
+          <a href={`${home}#contact`}>{d.nav.contact}</a>
+        </nav>
+        <a class="icon-btn" href={altPath} hreflang={other(lang)} lang={other(lang)} title={d.switchLabel} aria-label={d.switchLabel} data-lang-switch>
+          {d.switchTo}
+        </a>
+        <button class="icon-btn theme-btn" type="button" aria-label={d.themeLabel} title={d.themeLabel} data-theme-toggle>
+          <span class="moon"><Icon name="moon" /></span><span class="sun"><Icon name="sun" /></span>
+        </button>
+        <a class="icon-btn" href={`https://github.com/${config.owner}`} aria-label="GitHub" title="GitHub"><Icon name="github" /></a>
+      </div>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <em>{d.footer.tagline}</em>
+        <span>
+          {d.footer.rebuilt} {formatDate(generatedAt, lang, { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+          · <a href={`https://github.com/${config.owner}/${config.owner}.github.io`}>{d.footer.source}</a>
+        </span>
+      </div>
+    </footer>
+    <script is:inline>
+      (function () {
+        var btn = document.querySelector('[data-theme-toggle]');
+        if (btn) btn.addEventListener('click', function () {
+          var next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+          document.documentElement.dataset.theme = next;
+          try { localStorage.setItem('theme', next); } catch (e) {}
+        });
+        // Keep the section anchor when switching language.
+        var sw = document.querySelector('[data-lang-switch]');
+        if (sw) sw.addEventListener('click', function () {
+          if (location.hash) sw.setAttribute('href', sw.getAttribute('href').split('#')[0] + location.hash);
+        });
+      })();
+    </script>
+  </body>
+</html>

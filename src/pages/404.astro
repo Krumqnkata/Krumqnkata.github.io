@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { t } from '../i18n/index.ts';
+const en = t('en');
+const bg = t('bg');
+---
+<Base lang="en" title={en.notFound.title} altPath="/bg/">
+  <div class="wrap notfound">
+    <div>
+      <div class="code">404</div>
+      <h1>{en.notFound.title} · {bg.notFound.title}</h1>
+      <p>{en.notFound.body}<br />{bg.notFound.body}</p>
+      <div class="hero-actions" style="justify-content:center">
+        <a class="btn btn-primary" href="/">{en.notFound.home}</a>
+        <a class="btn btn-ghost" href="/bg/">{bg.notFound.home}</a>
+      </div>
+    </div>
+  </div>
+</Base>

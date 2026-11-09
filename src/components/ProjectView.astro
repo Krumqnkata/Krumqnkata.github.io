@@ -1,0 +1,154 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from './Icon.astro';
+import type { Project } from '../lib/projects.ts';
+import { t, homePath, projectPath, other, formatDate, type Lang } from '../i18n/index.ts';
+
+interface Props { project: Project; lang: Lang }
+const { project: p, lang } = Astro.props;
+const d = t(lang);
+const f = d.project.facts;
+const primary = p.repos[0];
+const readme = p.readme[lang];
+const single = p.images.length === 1;
+---
+<Base lang={lang} title={p.title[lang]} description={p.description[lang]} altPath={projectPath(other(lang), p.slug)} image={p.cover}>
+  <div class="wrap">
+    <nav class="crumbs"><a href={`${homePath(lang)}#projects`}><Icon name="back" />{d.project.back}</a></nav>
+
+    <header class="phead">
+      <div class="badges">
+        <span class="chip chip-accent">{d.categories[p.category]}</span>
+        {p.isPrivate && <span class="chip"><Icon name="lock" />{d.card.private}</span>}
+        {p.workflows.map((w) => (
+          <a href={w.url} target="_blank" rel="noopener"><img src={w.badge} alt={`${w.name} status`} height="20" /></a>
+        ))}
+      </div>
+      <h1>{p.title[lang]}</h1>
+      <p class="desc">{p.description[lang]}</p>
+      <div class="actions">
+        {p.live && <a class="btn btn-primary" href={p.live} target="_blank" rel="noopener"><Icon name="external" />{d.project.live}</a>}
+        {p.repos.map((r, i) => (
+          <a class="btn btn-ghost" href={r.url} target="_blank" rel="noopener">
+            <Icon name="github" />{p.repos.length > 1 && r.name.toLowerCase().includes('backend') ? d.project.backend : p.repos.length > 1 && i > 0 ? r.name : d.project.code}
+          </a>
+        ))}
+        {p.release && <a class="btn btn-ghost" href={p.release.url} target="_blank" rel="noopener"><Icon name="download" />{d.project.release} {p.release.tag}</a>}
+        {p.links.map((l) => <a class="btn btn-ghost" href={l.url} target="_blank" rel="noopener"><Icon name="external" />{l.label[lang]}</a>)}
+      </div>
+    </header>
+
+    <div class="playout">
+      <div class="pmain">
+        {p.contribution && (
+          <div class="callout">
+            <h2>{d.project.contribution}</h2>
+            <p set:html={p.contribution[lang]} />
+          </div>
+        )}
+
+        {p.images.length > 0 && (
+          <section>
+            <h2>{d.project.gallery}</h2>
+            <div class={`gallery${single ? ' single' : ''}`}>
+              {p.images.map((img, i) => (
+                <button type="button" data-lightbox={img.src} data-caption={img.alt} aria-label={img.alt || `${d.project.gallery} ${i + 1}`}>
+                  <img src={img.src} alt={img.alt} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {p.caseStudy && (
+          <section>
+            <h2>{d.project.overview}</h2>
+            <div class="markdown case" set:html={p.caseStudy[lang]} />
+          </section>
+        )}
+
+        {p.isPrivate ? (
+          <div class="callout"><p>{d.project.privateNote}</p></div>
+        ) : (
+          <section>
+            <h2>{d.project.readme}</h2>
+            {readme
+              ? <article class="markdown" set:html={readme} />
+              : <p class="empty">{d.project.noReadme}</p>}
+          </section>
+        )}
+      </div>
+
+      <aside class="pside">
+        {!p.isPrivate && (
+          <div class="panel">
+            <dl class="facts">
+              <div><dt>{f.stars}</dt><dd>{p.stars}</dd></div>
+              <div><dt>{f.forks}</dt><dd>{p.forks}</dd></div>
+              {p.license && <div><dt>{f.license}</dt><dd>{p.license}</dd></div>}
+              {p.release && <div><dt>{f.release}</dt><dd><a href={p.release.url}>{p.release.tag}</a></dd></div>}
+              <div><dt>{f.created}</dt><dd>{formatDate(p.createdAt, lang)}</dd></div>
+              <div><dt>{f.updated}</dt><dd>{formatDate(p.updatedAt, lang)}</dd></div>
+            </dl>
+          </div>
+        )}
+
+        {p.languages.length > 0 ? (
+          <div class="panel">
+            <h3>{d.project.languages}</h3>
+            <div class="langbar" aria-hidden="true">
+              {p.languages.map((l) => <span style={`width:${(l.share * 100).toFixed(1)}%;background:${l.color}`} />)}
+            </div>
+            <ul class="langlist">
+              {p.languages.map((l) => <li><i style={`background:${l.color}`} />{l.name}<b>{(l.share * 100).toFixed(1)}%</b></li>)}
+            </ul>
+          </div>
+        ) : (
+          <div class="panel">
+            <h3>{d.project.languages}</h3>
+            <div class="topics">{p.stack.map((s) => <span class="chip mono">{s}</span>)}</div>
+          </div>
+        )}
+
+        {p.topics.length > 0 && (
+          <div class="panel">
+            <h3>{d.project.topics}</h3>
+            <div class="topics">{p.topics.map((topic) => <a class="chip" href={`https://github.com/topics/${topic}`} target="_blank" rel="noopener" style="text-decoration:none">#{topic}</a>)}</div>
+          </div>
+        )}
+
+        {primary && (
+          <div class="panel">
+            <h3>{p.repos.length > 1 ? d.project.related : d.project.viewOnGithub}</h3>
+            <div class="repo-list">
+              {p.repos.map((r) => <a href={r.url} target="_blank" rel="noopener"><Icon name="github" />{r.fullName}</a>)}
+            </div>
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+
+  <dialog class="lightbox" data-lightbox-dialog>
+    <form method="dialog"><button class="close" aria-label="Close">×</button></form>
+    <img src="" alt="" />
+    <p></p>
+  </dialog>
+  <script is:inline>
+    (function () {
+      var dialog = document.querySelector('[data-lightbox-dialog]');
+      if (!dialog || !dialog.showModal) return;
+      var img = dialog.querySelector('img');
+      var cap = dialog.querySelector('p');
+      document.querySelectorAll('[data-lightbox]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          img.src = btn.dataset.lightbox;
+          img.alt = btn.dataset.caption || '';
+          cap.textContent = btn.dataset.caption || '';
+          dialog.showModal();
+        });
+      });
+      dialog.addEventListener('click', function (e) { if (e.target === dialog) dialog.close(); });
+    })();
+  </script>
+</Base>

@@ -1,0 +1,33 @@
+---
+import Icon from './Icon.astro';
+import type { Project } from '../lib/projects.ts';
+import { t, projectPath, type Lang } from '../i18n/index.ts';
+interface Props { project: Project; lang: Lang; eager?: boolean }
+const { project: p, lang, eager = false } = Astro.props;
+const d = t(lang);
+const href = projectPath(lang, p.slug);
+---
+<article class="fcard">
+  <div class="fcard-media">
+    {p.cover
+      ? <img src={p.cover} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+      : <div class="fcard-placeholder" aria-hidden="true">{p.title[lang]}</div>}
+  </div>
+  <div class="fcard-body">
+    <div class="row">
+      <span class="chip chip-accent">{d.categories[p.category]}</span>
+      {p.isPrivate && <span class="chip"><Icon name="lock" />{d.card.private}</span>}
+      {p.stars > 0 && <span class="chip"><Icon name="star" />{p.stars}</span>}
+    </div>
+    <h3><a href={href}>{p.title[lang]}</a></h3>
+    <p>{p.description[lang]}</p>
+    <div class="row">
+      {p.stack.slice(0, 6).map((s) => <span class="chip mono">{s}</span>)}
+    </div>
+    <div class="actions">
+      {p.live && <a class="btn btn-primary btn-sm" href={p.live} target="_blank" rel="noopener"><Icon name="external" />{d.card.live}</a>}
+      {p.repos[0] && <a class="btn btn-ghost btn-sm" href={p.repos[0].url} target="_blank" rel="noopener"><Icon name="github" />{d.card.code}</a>}
+      <a class="btn btn-ghost btn-sm" href={href}>{d.card.details}<Icon name="arrow" /></a>
+    </div>
+  </div>
+</article>

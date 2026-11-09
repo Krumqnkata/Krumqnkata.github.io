@@ -1,0 +1,205 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from './Icon.astro';
+import FeaturedCard from './FeaturedCard.astro';
+import ProjectCard from './ProjectCard.astro';
+import config from '../data/portfolio.config.ts';
+import { projects, featured, totals, generatedAt, categoriesInUse, languageColor } from '../lib/projects.ts';
+import { t, homePath, other, formatDate, type Lang } from '../i18n/index.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const ASSETS = `https://raw.githubusercontent.com/${config.owner}/${config.owner}/main/assets/generated`;
+const counts = Object.fromEntries(categoriesInUse.map((c) => [c, projects.filter((p) => p.category === c).length]));
+---
+<Base lang={lang} altPath={homePath(other(lang))} image={featured[0]?.cover}>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="prompt"><b>~/stara-zagora</b> $ whoami</p>
+        <h1>{d.hero.hello} <em>{d.hero.name}</em>.<span class="handle">@{d.hero.handle} · PGKNMA · Python · Java · Web · Linux</span></h1>
+        <p class="lead" set:html={d.hero.lead} />
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#projects">{d.hero.ctaProjects}<Icon name="arrow" /></a>
+          <a class="btn btn-ghost" href={`https://github.com/${config.owner}`} target="_blank" rel="noopener"><Icon name="github" />{d.hero.ctaGithub}</a>
+        </div>
+      </div>
+      <div class="terminal" aria-label="Stats">
+        <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="terminal-body">
+          <p class="cmd"><b>$</b> gh repo list {config.owner} --public</p>
+          <div class="stat-row">
+            <div class="stat"><strong>{totals.projects}</strong><span>{d.stats.projects}</span></div>
+            <div class="stat"><strong>{totals.languages}</strong><span>{d.stats.languages}</span></div>
+            <div class="stat"><strong>{featured.length}</strong><span>{d.featured.toLowerCase()}</span></div>
+            <div class="stat"><strong>{totals.live}</strong><span>{d.stats.live}</span></div>
+          </div>
+          <p class="cmd"><b>✓</b> {d.stats.updated} {formatDate(generatedAt, lang, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="featured" style="padding-top: 24px">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">01 — {d.nav.projects}</span>
+          <h2>{d.featured}</h2>
+          <p>{d.featuredLead}</p>
+        </div>
+      </div>
+      <div class="featured-grid">
+        {featured.map((p, i) => <FeaturedCard project={p} lang={lang} eager={i === 0} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="projects">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">02 — {d.all}</span>
+          <h2>{d.all} <span class="mono" style="color: var(--muted); font-size: .6em">({projects.length})</span></h2>
+          <p>{d.allLead}</p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <label class="search">
+          <span class="sr-only">{d.search}</span>
+          <Icon name="search" />
+          <input type="search" placeholder={d.search} data-search autocomplete="off" />
+        </label>
+        <label>
+          <span class="sr-only">{d.sort.label}</span>
+          <select data-sort>
+            <option value="recent">{d.sort.recent}</option>
+            <option value="stars">{d.sort.stars}</option>
+            <option value="name">{d.sort.name}</option>
+          </select>
+        </label>
+      </div>
+      <div class="filters" role="group" aria-label={d.sort.label}>
+        <button type="button" aria-pressed="true" data-filter="all">{d.filterAll}<span class="n">{projects.length}</span></button>
+        {categoriesInUse.map((c) => (
+          <button type="button" aria-pressed="false" data-filter={c}>{d.categories[c]}<span class="n">{counts[c]}</span></button>
+        ))}
+      </div>
+      <div class="grid" data-grid>
+        {projects.map((p) => <ProjectCard project={p} lang={lang} />)}
+      </div>
+      <p class="empty" data-empty hidden>{d.noResults}</p>
+    </div>
+  </section>
+
+  <section class="block" id="about">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">03 — {d.nav.about}</span>
+          <h2>{d.about.title}</h2>
+        </div>
+      </div>
+      <div class="about-grid">
+        <div>
+          <div class="about-text">
+            {d.about.body.map((para) => <p set:html={para} />)}
+          </div>
+          <div class="panel beyond">
+            <h3>{d.about.beyondTitle}</h3>
+            <p set:html={d.about.beyond} />
+          </div>
+        </div>
+        <div class="panel">
+          <h3>{d.about.toolkit}</h3>
+          <dl class="toolkit">
+            {config.toolkit.map((group) => (
+              <div>
+                <dt>{group.label[lang]}</dt>
+                <dd>{group.items.map((item) => <span class="chip"><i class="dot" style={`background:${languageColor(item)}`} />{item}</span>)}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="activity">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="kicker">04 — {d.nav.activity}</span>
+          <h2>{d.activity.title}</h2>
+          <p>{d.activity.lead}</p>
+        </div>
+      </div>
+      <div class="activity-cards">
+        <img src={`${ASSETS}/summary.svg`} alt="Public repository statistics" loading="lazy" />
+        <img src={`${ASSETS}/languages.svg`} alt="Primary languages of original public repositories" loading="lazy" />
+      </div>
+      <div class="snake">
+        <img class="snake-light" src={`${ASSETS}/snake-light.svg`} alt="Contribution calendar" loading="lazy" />
+        <img class="snake-dark" src={`${ASSETS}/snake-dark.svg`} alt="Contribution calendar" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="contact">
+    <div class="wrap">
+      <div class="contact">
+        <span class="kicker">05 — {d.nav.contact}</span>
+        <h2>{d.contact.title}</h2>
+        <p>{d.contact.body}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={`mailto:${config.email}`}><Icon name="mail" />{d.contact.email}</a>
+          <a class="btn btn-ghost" href={`https://github.com/${config.owner}`} target="_blank" rel="noopener"><Icon name="github" />GitHub</a>
+        </div>
+        <p class="mono" style="margin: 18px auto 0; font-size: 14px">{config.email}</p>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (function () {
+      var grid = document.querySelector('[data-grid]');
+      if (!grid) return;
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('[data-card]'));
+      var input = document.querySelector('[data-search]');
+      var sort = document.querySelector('[data-sort]');
+      var empty = document.querySelector('[data-empty]');
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
+      var state = { q: '', cat: 'all', sort: 'recent' };
+
+      function apply() {
+        var visible = 0;
+        var words = state.q.toLowerCase().split(/\s+/).filter(Boolean);
+        cards.forEach(function (card) {
+          var text = card.dataset.search;
+          var ok = (state.cat === 'all' || card.dataset.category === state.cat) &&
+            words.every(function (w) { return text.indexOf(w) !== -1; });
+          card.hidden = !ok;
+          if (ok) visible++;
+        });
+        var sorted = cards.slice().sort(function (a, b) {
+          if (state.sort === 'stars') return (+b.dataset.stars - +a.dataset.stars) || b.dataset.updated.localeCompare(a.dataset.updated);
+          if (state.sort === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+          return b.dataset.updated.localeCompare(a.dataset.updated);
+        });
+        sorted.forEach(function (card) { grid.appendChild(card); });
+        empty.hidden = visible !== 0;
+      }
+
+      input.addEventListener('input', function () { state.q = input.value; apply(); });
+      sort.addEventListener('change', function () { state.sort = sort.value; apply(); });
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.cat = btn.dataset.filter;
+          buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+          apply();
+        });
+      });
+    })();
+  </script>
+</Base>

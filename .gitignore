@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+src/data/generated/
+.DS_Store
+*.log
+.claude/

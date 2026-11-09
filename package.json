@@ -1,0 +1,19 @@
+{
+  "name": "krumqnkata-portfolio",
+  "private": true,
+  "type": "module",
+  "description": "Krum's personal portfolio, rebuilt daily from GitHub.",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "fetch": "node scripts/fetch-projects.mjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.4.8",
+    "sanitize-html": "^2.18.1"
+  }
+}
