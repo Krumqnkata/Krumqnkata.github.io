@@ -33,8 +33,12 @@
   --code-bg: #f6f0d4;
   --radius: 12px;
   --radius-sm: 8px;
-  --font: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  /* Ubuntu (Linux) for reading, Fira Code (programming, ligatures) for the terminal UI,
+     Tiny5 for pixel headings, Press Start 2P for tiny 8-bit accents. All support Cyrillic. */
+  --font: 'Ubuntu', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'Fira Code', 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --pixel: 'Tiny5', 'Fira Code', ui-monospace, monospace;
+  --bit: 'Press Start 2P', 'Tiny5', ui-monospace, monospace;
   --max: 1180px;
   --bar: 44px;
   color-scheme: light;
@@ -115,7 +119,7 @@ p { margin: 0; }
   display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 7px; white-space: nowrap;
   color: var(--text-soft); text-decoration: none; border: 1px solid transparent;
 }
-.workspaces a b { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 5px; font-size: 11px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+.workspaces a b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 5px; font: 400 9px/1 var(--bit); background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
 .workspaces a:hover { color: var(--text); background: var(--accent-soft); }
 .workspaces a[aria-current='true'] { color: var(--text); background: var(--surface); border-color: var(--border-strong); }
 .workspaces a[aria-current='true'] b { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
@@ -165,7 +169,7 @@ section.block { padding: 22px 0; }
 .ps .d { color: var(--accent); font-weight: 700; }
 .ps .c { color: var(--text); }
 .section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin-bottom: 24px; }
-.section-head h2 { font: 800 clamp(24px, 4vw, 34px) var(--mono); letter-spacing: -0.02em; }
+.section-head h2 { font: 400 clamp(28px, 4.6vw, 40px)/1.1 var(--pixel); letter-spacing: 0; }
 .section-head p { color: var(--muted); margin-top: 8px; max-width: 62ch; }
 .cursor { display: inline-block; width: .55em; height: 1.05em; vertical-align: -0.15em; background: var(--accent); margin-left: 2px; animation: blink 1.1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
@@ -206,7 +210,7 @@ section.block { padding: 22px 0; }
 .typed { display: inline-block; overflow: hidden; white-space: nowrap; vertical-align: bottom; width: 0; animation: type .7s steps(6, end) .3s forwards; }
 @keyframes type { to { width: 6ch; } }
 @media (prefers-reduced-motion: reduce) { .typed { width: auto; } }
-.hero h1 { font: 800 clamp(34px, 6.2vw, 58px) var(--mono); letter-spacing: -0.03em; margin-top: 14px; }
+.hero h1 { font: 400 clamp(22px, 3.6vw, 38px)/1.45 var(--bit); letter-spacing: 0; margin-top: 18px; }
 .hero h1 em { font-style: normal; color: var(--accent); }
 .hero .handle { margin-top: 10px; font: 500 13.5px var(--mono); color: var(--muted); }
 .hero .lead { margin-top: 18px; font: 400 17px/1.65 var(--font); color: var(--text-soft); max-width: 58ch; }
@@ -259,7 +263,7 @@ section.block { padding: 22px 0; }
 .art .art-text { position: relative; display: grid; gap: 8px; justify-items: center; }
 .art .art-icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: rgb(254 250 224 / 10%); border: 1px solid rgb(254 250 224 / 22%); }
 .art .art-icon svg { width: 26px; height: 26px; color: #dda15e; }
-.art strong { font: 800 clamp(18px, 3vw, 30px)/1.15 var(--mono); letter-spacing: -0.02em; max-width: 18ch; }
+.art strong { font: 400 clamp(22px, 3.4vw, 36px)/1.1 var(--pixel); letter-spacing: 0; max-width: 18ch; }
 .art span.cmd { font: 500 12px var(--mono); color: #dda15e; }
 
 /* ---------- Featured (5, large) ---------- */
@@ -281,7 +285,7 @@ section.block { padding: 22px 0; }
 .fp-info { padding: 22px 20px; display: flex; flex-direction: column; gap: 14px; justify-content: center; }
 @media (min-width: 900px) { .fp-info { padding: 32px; } }
 .fp-info .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.fp-info h3 { font: 800 clamp(22px, 3vw, 30px) var(--mono); letter-spacing: -0.02em; }
+.fp-info h3 { font: 400 clamp(26px, 3.4vw, 36px)/1.1 var(--pixel); letter-spacing: 0; }
 .fp-info h3 a { color: var(--text); text-decoration: none; }
 .fp-info h3 a:hover { color: var(--accent); }
 .fp-info p { color: var(--text-soft); }
@@ -297,7 +301,7 @@ section.block { padding: 22px 0; }
 .client-desktop img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
 .client-phone { position: absolute; right: 0; bottom: 0; width: 26%; aspect-ratio: 9 / 19; border-radius: 18px; overflow: hidden; border: 5px solid #283618; box-shadow: var(--shadow-lg); background: #283618; }
 .client-phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
-.client h3 { font: 800 clamp(22px, 3vw, 30px) var(--mono); letter-spacing: -0.02em; }
+.client h3 { font: 400 clamp(26px, 3.4vw, 36px)/1.1 var(--pixel); letter-spacing: 0; }
 .client-info { display: grid; gap: 14px; }
 .client-info p { color: var(--text-soft); }
 .client-info ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
@@ -338,7 +342,7 @@ section.block { padding: 22px 0; }
 .tile-top { display: flex; align-items: center; gap: 8px; font: 600 11.5px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
 .tile-top .i { width: 18px; height: 18px; color: var(--accent); }
 .tile-top .spacer { flex: 1; }
-.tile h3 { font: 800 16px var(--mono); letter-spacing: -0.01em; }
+.tile h3 { font: 400 19px/1.2 var(--pixel); letter-spacing: 0; }
 .tile h3 a { color: var(--text); text-decoration: none; }
 .tile h3 a::after { content: ''; position: absolute; inset: 0; border-radius: 10px; }
 .tile h3 a:focus-visible { outline: none; }
@@ -386,14 +390,14 @@ section.block { padding: 22px 0; }
 
 /* ---------- Contact ---------- */
 .contact .win-body { text-align: center; padding-top: 40px; padding-bottom: 40px; }
-.contact h2 { font: 800 clamp(24px, 4.5vw, 38px) var(--mono); letter-spacing: -0.02em; }
+.contact h2 { font: 400 clamp(28px, 5vw, 46px)/1.1 var(--pixel); letter-spacing: 0; }
 .contact p { color: var(--text-soft); max-width: 56ch; margin: 14px auto 24px; }
 .contact .hero-actions { justify-content: center; }
 
 /* ---------- Footer: tmux status line ---------- */
 .statusline { margin-top: 28px; border-top: 1px solid var(--border); background: var(--surface-2); font: 500 12.5px var(--mono); color: var(--text-soft); }
 .statusline .inner { max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; justify-content: space-between; padding: 10px 14px; }
-.statusline .tag { background: var(--olive); color: #fefae0; padding: 1px 8px; border-radius: 4px; font-weight: 700; }
+.statusline .tag { background: var(--olive); color: #fefae0; padding: 3px 8px; border-radius: 4px; font: 400 9px/1.4 var(--bit); }
 .statusline a { color: var(--text-soft); }
 .statusline em { font-style: normal; color: var(--muted); }
 
@@ -403,7 +407,7 @@ section.block { padding: 22px 0; }
 .crumbs a:hover { color: var(--accent); }
 .crumbs .i { width: 16px; height: 16px; }
 .phead { padding: 16px 0 24px; display: grid; gap: 16px; }
-.phead h1 { font: 800 clamp(28px, 5.5vw, 46px) var(--mono); letter-spacing: -0.03em; }
+.phead h1 { font: 400 clamp(20px, 3.4vw, 34px)/1.45 var(--bit); letter-spacing: 0; }
 .phead .desc { font-size: 17.5px; color: var(--text-soft); max-width: 70ch; }
 .phead .actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .badges { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -453,7 +457,8 @@ section.block { padding: 22px 0; }
 .markdown { background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 22px 18px; overflow-wrap: anywhere; font-size: 15.5px; color: var(--text-soft); }
 @media (min-width: 720px) { .markdown { padding: 30px 34px; } }
 .markdown > :first-child { margin-top: 0 !important; }
-.markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: var(--text); margin: 1.6em 0 .6em; font-family: var(--mono); letter-spacing: -0.02em; }
+.markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: var(--text); margin: 1.6em 0 .6em; font-family: var(--pixel); font-weight: 400; letter-spacing: 0; }
+.markdown h4 { font-family: var(--mono); }
 .markdown h1 { font-size: 1.75em; padding-bottom: .3em; border-bottom: 1px solid var(--border); }
 .markdown h2 { font-size: 1.35em; padding-bottom: .3em; border-bottom: 1px solid var(--border); }
 .markdown h3 { font-size: 1.15em; }
@@ -495,7 +500,7 @@ section.block { padding: 22px 0; }
 .notfound { min-height: 60vh; display: grid; place-items: center; padding: 48px 0; }
 .notfound .win { width: min(100%, 640px); }
 .notfound .win-body { font-family: var(--mono); display: grid; gap: 10px; }
-.notfound .code { font: 800 clamp(60px, 14vw, 120px)/1 var(--mono); color: var(--accent); }
+.notfound .code { font: 400 clamp(48px, 12vw, 96px)/1.1 var(--bit); color: var(--accent); }
 .notfound .err { color: var(--accent); font-weight: 700; }
 :root[data-theme='dark'] .notfound .err { color: var(--clay); }
 .notfound p { color: var(--text-soft); }
@@ -520,7 +525,7 @@ section.block { padding: 22px 0; }
 .game-pad button:active { background: var(--accent-soft); border-color: var(--accent); }
 .game-toast {
   position: fixed; left: 50%; top: calc(var(--bar) + 14px); transform: translateX(-50%); z-index: 61; padding: 9px 16px; border-radius: 8px;
-  background: var(--accent); color: var(--accent-ink); font: 700 14px var(--mono); box-shadow: var(--shadow-lg); animation: fade-in .2s ease;
+  background: var(--accent); color: var(--accent-ink); font: 400 11px/1.6 var(--bit); box-shadow: var(--shadow-lg); animation: fade-in .2s ease;
 }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
@@ -541,3 +546,14 @@ main:focus-visible { outline: none; }
 /* The `font` shorthand resets font-feature-settings, so force standard Cyrillic shapes everywhere. */
 :where(*) { font-feature-settings: "locl" 0 !important; }
 @media (max-width: 400px) { .tray .gh-btn { display: none; } }
+
+/* Font details */
+.os-logo .user-host { font-weight: 600; }
+.win-title { font-family: var(--mono); }
+.hero .lead, .about-text, .fp-info p, .tile p, .client-info p, .phead .desc { font-family: var(--font); }
+.neofetch pre { font-family: var(--mono); }
+.cursor { width: .5em; }
+
+/* Pixel fonts have one weight; never fake bold or italics. */
+h1, h2, h3, .art strong, .notfound .code { font-synthesis: none; }
+@media (max-width: 400px) { .workspaces a { padding: 4px 3px; } .workspaces a b { width: 18px; height: 18px; font-size: 8px; } .tray-btn { min-width: 30px; padding: 0 6px; } }
