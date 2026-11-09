@@ -1,0 +1,6 @@
+---
+// Decorative shell prompt shown above a section heading.
+interface Props { dir: string; cmd: string }
+const { dir, cmd } = Astro.props;
+---
+<p class="ps" aria-hidden="true"><span class="u">krum@stara-zagora</span>:<span class="d">{dir}</span>$ <span class="c">{cmd}</span></p>

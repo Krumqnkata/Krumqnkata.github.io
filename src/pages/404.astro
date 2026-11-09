@@ -1,19 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
+import Window from '../components/Window.astro';
 import { t } from '../i18n/index.ts';
 const en = t('en');
 const bg = t('bg');
 ---
 <Base lang="en" title={en.notFound.title} altPath="/bg/">
   <div class="wrap notfound">
-    <div>
-      <div class="code">404</div>
-      <h1>{en.notFound.title} · {bg.notFound.title}</h1>
+    <Window title="bash — 404">
+      <p><span style="color:var(--prompt);font-weight:700">krum@stara-zagora</span>:<span style="color:var(--accent);font-weight:700">~</span>$ cd <span data-path>this-page</span></p>
+      <p class="err">bash: cd: No such file or directory</p>
+      <div class="code" aria-hidden="true">404</div>
+      <h1 style="font-size:22px">{en.notFound.title} · {bg.notFound.title}</h1>
       <p>{en.notFound.body}<br />{bg.notFound.body}</p>
-      <div class="hero-actions" style="justify-content:center">
-        <a class="btn btn-primary" href="/">{en.notFound.home}</a>
-        <a class="btn btn-ghost" href="/bg/">{bg.notFound.home}</a>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/">cd ~ (EN)</a>
+        <a class="btn btn-ghost" href="/bg/">cd ~ (BG)</a>
       </div>
-    </div>
+    </Window>
   </div>
+  <script is:inline>
+    var el = document.querySelector('[data-path]');
+    if (el) el.textContent = location.pathname;
+  </script>
 </Base>

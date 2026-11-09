@@ -1,171 +1,245 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from './Icon.astro';
+import Window from './Window.astro';
+import Prompt from './Prompt.astro';
 import FeaturedCard from './FeaturedCard.astro';
 import ProjectCard from './ProjectCard.astro';
+import ClientWork from './ClientWork.astro';
 import config from '../data/portfolio.config.ts';
-import { projects, featured, totals, generatedAt, categoriesInUse, languageColor, profile } from '../lib/projects.ts';
+import { projects, featured, clientWork, totals, generatedAt, categoriesInUse, languageColor, profile, contributions } from '../lib/projects.ts';
 import { t, homePath, other, formatDate, type Lang } from '../i18n/index.ts';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t(lang);
-const ASSETS = `https://raw.githubusercontent.com/${config.owner}/${config.owner}/main/assets/generated`;
 const counts = Object.fromEntries(categoriesInUse.map((c) => [c, projects.filter((p) => p.category === c).length]));
+const initial = config.initialVisible;
+const hiddenCount = Math.max(0, projects.length - initial);
+
+// htop meters: main language per project
+const meters = totals.languageCounts.slice(0, 6);
+const maxMeter = meters[0]?.[1] || 1;
+
+// Contribution calendar
+const CELL = 11, GAP = 3;
+const weeks = contributions?.weeks ?? [];
+const nonZero = weeks.flat().map((day) => day.count).filter((n) => n > 0).sort((a, b) => a - b);
+const q = (p: number) => nonZero[Math.floor((nonZero.length - 1) * p)] ?? 1;
+const thresholds = [q(0.25), q(0.5), q(0.75)];
+const level = (n: number) => (n === 0 ? 0 : n <= thresholds[0] ? 1 : n <= thresholds[1] ? 2 : n <= thresholds[2] ? 3 : 4);
+const MONTHS = lang === 'bg'
+  ? ['ян', 'фев', 'мар', 'апр', 'май', 'юни', 'юли', 'авг', 'сеп', 'окт', 'ное', 'дек']
+  : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const months = weeks
+  .map((week, i) => ({ i, day: week[0] }))
+  .filter(({ i, day }) => day && Number(day.date.slice(8, 10)) <= 7 && i < weeks.length - 2)
+  .map(({ i, day }) => ({ x: i * (CELL + GAP), label: MONTHS[Number(day.date.slice(5, 7)) - 1] }));
+const calW = weeks.length * (CELL + GAP);
+const calH = 7 * (CELL + GAP) + 16;
+const sinceYear = totals.since ? new Date(totals.since).getFullYear() : '';
+const avatar = `${profile.avatar}${profile.avatar.includes('?') ? '&' : '?'}s=640`;
 ---
 <Base lang={lang} altPath={homePath(other(lang))} image={featured[0]?.cover}>
-  <section class="hero">
+  <section class="hero" id="home" aria-labelledby="hero-title">
     <div class="wrap">
-      <div>
-        <p class="prompt"><b>~/stara-zagora</b> $ whoami</p>
-        <h1>{d.hero.hello} <em>{d.hero.name}</em>.<span class="handle">@{d.hero.handle} · Python · Java · Web · Linux · 3D</span></h1>
+      <Window class="term" title="krum@stara-zagora: ~ — bash">
+        <p class="line" aria-hidden="true"><span class="u">krum@stara-zagora</span>:<span class="d">~</span>$ <span class="c typed">whoami</span><span class="cursor"></span></p>
+        <h1 id="hero-title">{d.hero.hello} <em>{d.hero.name}</em>.</h1>
+        <p class="handle">@{d.hero.handle} · Python · Java · Web · Linux · 3D</p>
         <p class="lead" set:html={d.hero.lead} />
         <div class="hero-actions">
           <a class="btn btn-primary" href="#projects">{d.hero.ctaProjects}<Icon name="arrow" /></a>
           <a class="btn btn-ghost" href={`https://github.com/${config.owner}`} target="_blank" rel="noopener"><Icon name="github" />{d.hero.ctaGithub}</a>
+          <a class="btn btn-ghost" href={`mailto:${config.email}`}><Icon name="mail" />{d.contact.email}</a>
         </div>
-      </div>
+      </Window>
       <div class="hero-side">
-        <figure class="portrait wait">
-          <noscript><style>.portrait.wait .portrait-print img { clip-path: none !important; } .portrait.wait figcaption { opacity: 1 !important; } .nozzle { display: none; }</style></noscript>
+        <Window as="figure" class="portrait wait" title="krum.png — image viewer">
+          <noscript><style>.portrait.wait .portrait-print img { clip-path: none !important; } .nozzle { display: none; }</style></noscript>
           <div class="portrait-print">
-            <img src={`${profile.avatar}${profile.avatar.includes('?') ? '&' : '?'}s=640`} alt={d.hero.photoAlt} width="320" height="320" fetchpriority="high" />
+            <img src={avatar} alt={d.hero.photoAlt} width="320" height="320" fetchpriority="high" />
             <span class="nozzle" aria-hidden="true"></span>
           </div>
-          <figcaption class="mono"><span class="pdot" aria-hidden="true"></span>krum.stl · {d.hero.printed}</figcaption>
-        </figure>
-        <div class="terminal" aria-label="Stats">
-          <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
-          <div class="terminal-body">
-            <p class="cmd"><b>$</b> gh repo list --public</p>
-            <div class="stat-row">
-              <div class="stat"><strong>{totals.projects}</strong><span>{d.stats.projects}</span></div>
-              <div class="stat"><strong>{totals.live}</strong><span>{d.stats.live}</span></div>
+          <figcaption><span>krum.stl</span><b>{d.hero.printed}</b></figcaption>
+        </Window>
+        <Window class="neofetch" title="neofetch">
+          <pre aria-hidden="true">{` ██╗  ██╗
+ ██║ ██╔╝
+ █████╔╝
+ ██╔═██╗
+ ██║  ██╗
+ ╚═╝  ╚═╝`}</pre>
+          <dl>
+            <div class="who"><dt class="sr-only">user</dt><dd>krum@stara-zagora</dd></div>
+            <div class="rule" aria-hidden="true"><dd>-----------------</dd></div>
+            <div><dt>{d.neofetch.os}:</dt><dd>KrumOS 26.11</dd></div>
+            <div><dt>{d.neofetch.host}:</dt><dd>{d.neofetch.hostValue}</dd></div>
+            <div><dt>{d.neofetch.shell}:</dt><dd>python · ts · java</dd></div>
+            <div><dt>{d.neofetch.projects}:</dt><dd>{totals.projects}</dd></div>
+            <div><dt>{d.neofetch.live}:</dt><dd>{totals.live}</dd></div>
+            <div><dt>{d.neofetch.uptime}:</dt><dd><time datetime={generatedAt}>{formatDate(generatedAt, lang, { day: 'numeric', month: 'short' })}</time></dd></div>
+          </dl>
+          <div class="swatches" aria-hidden="true" style="grid-column: 1 / -1">
+            {['#283618', '#606c38', '#fefae0', '#dda15e', '#bc6c25'].map((c) => <i style={`background:${c}`}></i>)}
+          </div>
+        </Window>
+      </div>
+    </div>
+  </section>
+
+  <div id="projects">
+    <section class="block" id="featured" aria-labelledby="featured-title">
+      <div class="wrap">
+        <Prompt dir="~/projects" cmd="ls --featured" />
+        <div class="section-head">
+          <div>
+            <h2 id="featured-title">{d.featured}</h2>
+            <p>{d.featuredLead}</p>
+          </div>
+        </div>
+        <div class="featured-list">
+          {featured.map((p, i) => <FeaturedCard project={p} lang={lang} eager={i === 0} />)}
+        </div>
+      </div>
+    </section>
+
+    {clientWork.map((p) => <ClientWork project={p} lang={lang} />)}
+
+    <section class="block" id="all" aria-labelledby="all-title">
+      <div class="wrap">
+        <Prompt dir="~/projects" cmd="ls -la --sort=time" />
+        <Window title="~/projects — files">
+          <div class="section-head">
+            <div>
+              <h2 id="all-title">{d.all} <span style="color: var(--muted); font-size: .6em">({projects.length})</span></h2>
+              <p>{d.allLead}</p>
             </div>
-            <p class="cmd"><b>✓</b> {d.stats.updated} {formatDate(generatedAt, lang, { day: 'numeric', month: 'short' })}</p>
+          </div>
+          <div class="toolbar">
+            <label class="search">
+              <span class="sr-only">{d.search}</span>
+              <Icon name="search" />
+              <input type="search" placeholder={d.search} data-search autocomplete="off" />
+            </label>
+            <label class="sort">
+              <span class="sr-only">{d.sort.label}</span>
+              <select data-sort>
+                <option value="recent">{d.sort.recent}</option>
+                <option value="stars">{d.sort.stars}</option>
+                <option value="name">{d.sort.name}</option>
+              </select>
+            </label>
+          </div>
+          <div class="filters" role="group" aria-label={d.sort.label}>
+            <button type="button" aria-pressed="true" data-filter="all">{d.filterAll}<span class="n">{projects.length}</span></button>
+            {categoriesInUse.map((c) => (
+              <button type="button" aria-pressed="false" data-filter={c}>{d.categories[c]}<span class="n">{counts[c]}</span></button>
+            ))}
+          </div>
+          <div class="grid" id="project-grid" data-grid data-initial={initial}>
+            {projects.map((p) => <ProjectCard project={p} lang={lang} />)}
+          </div>
+          <p class="empty" data-empty hidden role="status">{d.noResults}</p>
+          <div class="more-row">
+            <button class="btn btn-ghost" type="button" data-more aria-expanded="false" aria-controls="project-grid" hidden
+              data-show={`${d.more.show} (${hiddenCount})`} data-less={d.more.less}>{d.more.show} ({hiddenCount})</button>
+          </div>
+        </Window>
+      </div>
+    </section>
+  </div>
+
+  <section class="block" id="about" aria-labelledby="about-title">
+    <div class="wrap">
+      <Prompt dir="~" cmd="cat about.md" />
+      <Window title="~/about.md — vim">
+        <div class="about-grid">
+          <div>
+            <div class="section-head" style="margin-bottom: 16px"><h2 id="about-title">{d.about.title}</h2></div>
+            <div class="about-text">
+              {d.about.body.map((para) => <p set:html={para} />)}
+            </div>
+            <div class="panel beyond">
+              <h3>{d.about.beyondTitle}</h3>
+              <p set:html={d.about.beyond} />
+            </div>
+          </div>
+          <div class="panel">
+            <h3>apt list --installed</h3>
+            <dl class="toolkit">
+              {config.toolkit.map((group) => (
+                <div>
+                  <dt>{group.label[lang]}</dt>
+                  <dd>{group.items.map((item) => <span class="chip"><i class="dot" style={`background:${languageColor(item)}`} />{item}</span>)}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
-      </div>
+      </Window>
     </div>
   </section>
 
-  <section class="block" id="featured" style="padding-top: 24px">
+  <section class="block" id="activity" aria-labelledby="activity-title">
     <div class="wrap">
-      <div class="section-head">
-        <div>
-          <span class="kicker">01 — {d.nav.projects}</span>
-          <h2>{d.featured}</h2>
-          <p>{d.featuredLead}</p>
-        </div>
-      </div>
-      <div class="featured-grid">
-        {featured.map((p, i) => <FeaturedCard project={p} lang={lang} eager={i === 0} />)}
-      </div>
-    </div>
-  </section>
-
-  <section class="block" id="projects">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <span class="kicker">02 — {d.all}</span>
-          <h2>{d.all} <span class="mono" style="color: var(--muted); font-size: .6em">({projects.length})</span></h2>
-          <p>{d.allLead}</p>
-        </div>
-      </div>
-      <div class="toolbar">
-        <label class="search">
-          <span class="sr-only">{d.search}</span>
-          <Icon name="search" />
-          <input type="search" placeholder={d.search} data-search autocomplete="off" />
-        </label>
-        <label>
-          <span class="sr-only">{d.sort.label}</span>
-          <select data-sort>
-            <option value="recent">{d.sort.recent}</option>
-            <option value="stars">{d.sort.stars}</option>
-            <option value="name">{d.sort.name}</option>
-          </select>
-        </label>
-      </div>
-      <div class="filters" role="group" aria-label={d.sort.label}>
-        <button type="button" aria-pressed="true" data-filter="all">{d.filterAll}<span class="n">{projects.length}</span></button>
-        {categoriesInUse.map((c) => (
-          <button type="button" aria-pressed="false" data-filter={c}>{d.categories[c]}<span class="n">{counts[c]}</span></button>
-        ))}
-      </div>
-      <div class="grid" data-grid>
-        {projects.map((p) => <ProjectCard project={p} lang={lang} />)}
-      </div>
-      <p class="empty" data-empty hidden>{d.noResults}</p>
-    </div>
-  </section>
-
-  <section class="block" id="about">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <span class="kicker">03 — {d.nav.about}</span>
-          <h2>{d.about.title}</h2>
-        </div>
-      </div>
-      <div class="about-grid">
-        <div>
-          <div class="about-text">
-            {d.about.body.map((para) => <p set:html={para} />)}
-          </div>
-          <div class="panel beyond">
-            <h3>{d.about.beyondTitle}</h3>
-            <p set:html={d.about.beyond} />
+      <Prompt dir="~" cmd="htop --user=krum" />
+      <Window class="htop" title="htop — krum@stara-zagora">
+        <div class="section-head" style="margin-bottom: 0">
+          <div>
+            <h2 id="activity-title">{d.htop.title}</h2>
+            <p>{d.activity.lead}</p>
           </div>
         </div>
-        <div class="panel">
-          <h3>{d.about.toolkit}</h3>
-          <dl class="toolkit">
-            {config.toolkit.map((group) => (
-              <div>
-                <dt>{group.label[lang]}</dt>
-                <dd>{group.items.map((item) => <span class="chip"><i class="dot" style={`background:${languageColor(item)}`} />{item}</span>)}</dd>
+        <div>
+          <h3 class="ps" style="margin-bottom: 10px">{d.htop.languages}</h3>
+          <div class="meters">
+            {meters.map(([name, n]) => (
+              <div class="meter" role="img" aria-label={`${name}: ${n}`}>
+                <span class="name">{name}</span>
+                <span class="track"><span class="fill" style={`width:${(n / maxMeter) * 100}%;color:${languageColor(name)}`}></span></span>
+                <span class="val">{n}</span>
               </div>
             ))}
-          </dl>
+          </div>
         </div>
-      </div>
+        <p class="htop-stats">
+          <span><b>{d.htop.tasks}:</b> <strong>{d.htop.tasksValue(totals.projects, totals.live)}</strong></span>
+          <span><b>{d.htop.repos}:</b> <strong>{totals.repos}</strong></span>
+          {sinceYear && <span><b>{d.htop.since}:</b> <strong>{sinceYear}</strong></span>}
+          {contributions && <span><b>Σ</b> <strong>{d.htop.contributions(contributions.total)}</strong></span>}
+        </p>
+        {contributions && (
+          <div>
+            <div class="cal-wrap">
+              <svg class="cal" viewBox={`0 0 ${calW} ${calH}`} role="img" aria-label={`${d.htop.calendarLabel}: ${d.htop.contributions(contributions.total)}`}>
+                {months.map((m) => <text x={m.x} y="10" class="cal-month">{m.label}</text>)}
+                {weeks.map((week, wi) => week.map((day) => (
+                  <rect x={wi * (CELL + GAP)} y={16 + day.weekday * (CELL + GAP)} width={CELL} height={CELL} rx="2" class={`l${level(day.count)}`}>
+                    <title>{`${day.date}: ${day.count}`}</title>
+                  </rect>
+                )))}
+              </svg>
+            </div>
+            <div class="cal-legend" aria-hidden="true">{d.htop.less} <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> {d.htop.more}</div>
+          </div>
+        )}
+      </Window>
     </div>
   </section>
 
-  <section class="block" id="activity">
+  <section class="block" id="contact" aria-labelledby="contact-title">
     <div class="wrap">
-      <div class="section-head">
-        <div>
-          <span class="kicker">04 — {d.nav.activity}</span>
-          <h2>{d.activity.title}</h2>
-          <p>{d.activity.lead}</p>
-        </div>
-      </div>
-      <div class="activity-cards">
-        <img src={`${ASSETS}/summary.svg`} alt="Public repository statistics" loading="lazy" />
-        <img src={`${ASSETS}/languages.svg`} alt="Primary languages of original public repositories" loading="lazy" />
-      </div>
-      <div class="snake">
-        <img class="snake-light" src={`${ASSETS}/snake-light.svg`} alt="Contribution calendar" loading="lazy" />
-        <img class="snake-dark" src={`${ASSETS}/snake-dark.svg`} alt="Contribution calendar" loading="lazy" />
-      </div>
-    </div>
-  </section>
-
-  <section class="block" id="contact">
-    <div class="wrap">
-      <div class="contact">
-        <span class="kicker">05 — {d.nav.contact}</span>
-        <h2>{d.contact.title}</h2>
+      <Prompt dir="~" cmd={`mail ${config.email}`} />
+      <Window class="contact" title="~/contact — mail">
+        <h2 id="contact-title">{d.contact.title}</h2>
         <p>{d.contact.body}</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href={`mailto:${config.email}`}><Icon name="mail" />{d.contact.email}</a>
           <a class="btn btn-ghost" href={`https://github.com/${config.owner}`} target="_blank" rel="noopener"><Icon name="github" />GitHub</a>
         </div>
         <p class="mono" style="margin: 18px auto 0; font-size: 14px">{config.email}</p>
-      </div>
+      </Window>
     </div>
   </section>
 
@@ -180,6 +254,8 @@ const counts = Object.fromEntries(categoriesInUse.map((c) => [c, projects.filter
       }, { threshold: 0.35 });
       io.observe(portrait);
     })();
+    // Show the most recent weeks first on narrow screens.
+    document.querySelectorAll('.cal-wrap').forEach(function (el) { el.scrollLeft = el.scrollWidth; });
   </script>
   <script is:inline>
     (function () {
@@ -189,30 +265,45 @@ const counts = Object.fromEntries(categoriesInUse.map((c) => [c, projects.filter
       var input = document.querySelector('[data-search]');
       var sort = document.querySelector('[data-sort]');
       var empty = document.querySelector('[data-empty]');
+      var more = document.querySelector('[data-more]');
       var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
-      var state = { q: '', cat: 'all', sort: 'recent' };
+      var initial = +grid.dataset.initial || 9;
+      var state = { q: '', cat: 'all', sort: 'recent', expanded: false };
 
-      function apply() {
-        var visible = 0;
+      function apply(focusIndex) {
         var words = state.q.toLowerCase().split(/\s+/).filter(Boolean);
-        cards.forEach(function (card) {
-          var text = card.dataset.search;
-          var ok = (state.cat === 'all' || card.dataset.category === state.cat) &&
-            words.every(function (w) { return text.indexOf(w) !== -1; });
-          card.hidden = !ok;
-          if (ok) visible++;
-        });
+        var browsing = state.cat === 'all' && !words.length;
         var sorted = cards.slice().sort(function (a, b) {
           if (state.sort === 'stars') return (+b.dataset.stars - +a.dataset.stars) || b.dataset.updated.localeCompare(a.dataset.updated);
           if (state.sort === 'name') return a.dataset.name.localeCompare(b.dataset.name);
-          return b.dataset.updated.localeCompare(a.dataset.updated);
+          return (+a.dataset.minor - +b.dataset.minor) || b.dataset.updated.localeCompare(a.dataset.updated);
         });
-        sorted.forEach(function (card) { grid.appendChild(card); });
-        empty.hidden = visible !== 0;
+        var matches = 0;
+        sorted.forEach(function (card) {
+          grid.appendChild(card);
+          var text = card.dataset.search;
+          var match = (state.cat === 'all' || card.dataset.category === state.cat) &&
+            words.every(function (w) { return text.indexOf(w) !== -1; });
+          if (match) matches++;
+          card.hidden = !(match && (!browsing || state.expanded || matches <= initial));
+        });
+        empty.hidden = matches !== 0;
+        more.hidden = !browsing || cards.length <= initial;
+        more.setAttribute('aria-expanded', String(state.expanded));
+        more.textContent = state.expanded ? more.dataset.less : more.dataset.show;
+        if (focusIndex != null) {
+          var target = sorted.filter(function (c) { return !c.hidden; })[focusIndex];
+          var link = target && target.querySelector('h3 a');
+          if (link) link.focus();
+        }
       }
 
       input.addEventListener('input', function () { state.q = input.value; apply(); });
       sort.addEventListener('change', function () { state.sort = sort.value; apply(); });
+      more.addEventListener('click', function () {
+        state.expanded = !state.expanded;
+        apply(state.expanded ? initial : null);
+      });
       buttons.forEach(function (btn) {
         btn.addEventListener('click', function () {
           state.cat = btn.dataset.filter;
@@ -220,6 +311,7 @@ const counts = Object.fromEntries(categoriesInUse.map((c) => [c, projects.filter
           apply();
         });
       });
+      apply();
     })();
   </script>
 </Base>

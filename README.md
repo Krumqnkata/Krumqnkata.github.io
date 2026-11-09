@@ -14,7 +14,8 @@ The site rebuilds itself **every day** from my GitHub account. Every public, non
 ## Adding or changing a project
 
 - **New public repository:** nothing to do, it shows up the next day. A good description, topics, a homepage link and screenshots in the README (or in `docs/screenshots/`) make its page better.
-- **Feature it, translate it, hide it or add private work:** edit `src/data/portfolio.config.ts`.
+- **Feature it, translate it, hide it or add private work:** edit `src/data/portfolio.config.ts`. There you also set `featured` (the 5 big cards), `minor` (shown last, behind "Show more"), `language` overrides and client work.
+- **No screenshots?** The site uses a screenshot from `public/covers/<slug>.jpg`, then the website's `og:image`, then a generated cover. To capture live demos again: `node scripts/capture-covers.mjs` (needs Playwright's Chromium).
 - **Refresh now:** *Actions → Build and deploy portfolio → Run workflow*, or run:
 
   ```bash

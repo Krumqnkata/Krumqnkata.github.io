@@ -304,6 +304,55 @@ async function describe(repo) {
   };
 }
 
+/** Checks a project's website: is it up, and what is its og:image (used as a cover). */
+async function probeSite(url) {
+  if (!url || !/^https?:/i.test(url)) return { ok: false, image: null };
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'krumqnkata-portfolio-builder', Accept: 'text/html' },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return { ok: false, image: null };
+    const html = (await res.text()).slice(0, 200000);
+    const tag = html.match(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)["'][^>]*>/i)?.[0];
+    const content = tag?.match(/content=["']([^"']+)["']/i)?.[1];
+    return { ok: true, image: content ? new URL(content, res.url).href : null };
+  } catch {
+    // Network trouble is not proof the site is down; keep the link.
+    return { ok: true, image: null };
+  }
+}
+
+/** Public contribution calendar for the last year (GraphQL). Optional: null when unavailable. */
+async function contributions() {
+  if (!TOKEN) return null;
+  try {
+    const res = await fetch(`${API}/graphql`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json', 'User-Agent': 'krumqnkata-portfolio-builder' },
+      body: JSON.stringify({
+        query: 'query($login:String!){user(login:$login){contributionsCollection{contributionCalendar{totalContributions weeks{contributionDays{date contributionCount weekday}}}}}}',
+        variables: { login: OWNER },
+      }),
+      signal: AbortSignal.timeout(20000),
+    });
+    const json = await res.json();
+    const cal = json?.data?.user?.contributionsCollection?.contributionCalendar;
+    if (!cal) {
+      console.warn('Contribution calendar unavailable:', JSON.stringify(json?.errors?.[0]?.message || res.status));
+      return null;
+    }
+    return {
+      total: cal.totalContributions,
+      weeks: cal.weeks.map((w) => w.contributionDays.map((d) => ({ date: d.date, count: d.contributionCount, weekday: d.weekday }))),
+    };
+  } catch (error) {
+    console.warn('Contribution calendar unavailable:', error.message);
+    return null;
+  }
+}
+
 async function mapLimit(items, limit, fn) {
   const results = new Array(items.length);
   let next = 0;
@@ -324,10 +373,14 @@ async function main() {
   console.log(`Found ${repos.length} public repositories for ${OWNER}.`);
   const projects = await mapLimit(repos, CONCURRENCY, async (repo) => {
     const data = await describe(repo);
+    const site = data.homepage ? await probeSite(data.homepage) : { ok: false, image: null };
+    data.ogImage = site.image;
+    data.homepageOk = site.ok;
     console.log(`  ✓ ${repo.name} (${data.images.length} images, ${data.workflows.length} workflows)`);
     return data;
   });
   const user = await gh(`/users/${encodeURIComponent(OWNER)}`);
+  const calendar = await contributions();
   const payload = {
     owner: OWNER,
     generatedAt: new Date().toISOString(),
@@ -338,6 +391,7 @@ async function main() {
       publicRepos: user.public_repos,
       url: user.html_url,
     },
+    contributions: calendar,
     projects,
   };
   await mkdir(dirname(OUT), { recursive: true });

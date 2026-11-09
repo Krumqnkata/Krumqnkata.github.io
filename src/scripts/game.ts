@@ -7,8 +7,8 @@ type Bug = { x: number; y: number; phase: number };
 type Spark = { x: number; y: number; vx: number; vy: number; life: number; color: string };
 
 const PLATFORM_SELECTOR = [
-  'h1', 'h2', '.btn', '.chip-accent', '.fcard', '.pcard', '.stat', '.panel', '.terminal', '.portrait-print',
-  '.filters button', '.search', '.contact', '.callout', '.gallery button', '.markdown', '.site-footer .wrap',
+  'h1', 'h2', '.btn', '.chip-accent', '.win', '.tile', '.panel', '.fp-thumbs', '.client-desktop',
+  '.filters button', '.search', '.callout', '.gallery button', '.markdown', '.statusline',
 ].join(',');
 
 const GRAVITY = 2300;
@@ -18,7 +18,7 @@ const BUS_W = 38;
 const BUS_H = 24;
 const BUG_COUNT = 5;
 const GOAL = 10;
-const HEADER = 64;
+const HEADER = 48;
 
 const root = document.querySelector<HTMLElement>('[data-game]');
 if (root) setup(root);
@@ -61,7 +61,7 @@ function setup(root: HTMLElement) {
     const list: Platform[] = [];
     const top = viewTop();
     for (const el of document.querySelectorAll<HTMLElement>(PLATFORM_SELECTOR)) {
-      if (el.closest('.site-header, [data-game], [data-game-pad]')) continue;
+      if (el.closest('.topbar, [data-game], [data-game-pad]')) continue;
       const r = el.getBoundingClientRect();
       if (r.width < 40 || r.height < 8) continue;
       if (r.bottom < -400 || r.top > window.innerHeight + 400) continue;

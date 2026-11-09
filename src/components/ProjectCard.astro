@@ -2,29 +2,30 @@
 import Icon from './Icon.astro';
 import { languageColor, type Project } from '../lib/projects.ts';
 import { t, projectPath, formatDate, type Lang } from '../i18n/index.ts';
-interface Props { project: Project; lang: Lang }
-const { project: p, lang } = Astro.props;
+interface Props { project: Project; lang: Lang; extra?: boolean }
+const { project: p, lang, extra = false } = Astro.props;
 const d = t(lang);
-const primaryLang = p.repos[0]?.language;
-const main = primaryLang ? { name: primaryLang, color: languageColor(primaryLang) } : p.languages[0];
 const search = [p.title.en, p.title.bg, p.description.en, p.description.bg, ...p.topics, ...p.stack, ...p.repos.map((r) => r.name)]
   .join(' ')
   .toLowerCase();
 ---
-<article class="pcard" data-card data-category={p.category} data-search={search} data-stars={p.stars} data-updated={p.updatedAt} data-name={p.title[lang].toLowerCase()}>
-  <div class="pcard-top">
-    <span class="pcard-cat">{d.categories[p.category]}</span>
-    <div class="pcard-links">
+<article class="tile" data-card data-extra={extra ? '' : undefined} data-category={p.category} data-search={search} data-stars={p.stars} data-updated={p.updatedAt} data-minor={p.isMinor ? '1' : '0'} data-name={p.title[lang].toLowerCase()}>
+  <div class="tile-top">
+    <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
+    <span>{d.categories[p.category]}</span>
+    {p.isClient && <span class="chip chip-client">{d.client.badge}</span>}
+    <span class="spacer"></span>
+    <div class="tile-links">
       {p.live && <a href={p.live} target="_blank" rel="noopener" aria-label={`${d.card.live}: ${p.title[lang]}`} title={d.card.live}><Icon name="external" /></a>}
       {p.repos[0] && <a href={p.repos[0].url} target="_blank" rel="noopener" aria-label={`${d.card.code}: ${p.title[lang]}`} title={d.card.code}><Icon name="github" /></a>}
     </div>
   </div>
   <h3><a href={projectPath(lang, p.slug)}>{p.title[lang]}</a></h3>
   <p>{p.description[lang]}</p>
-  <div class="pcard-foot">
-    {main && <span class="lang"><i style={`background:${main.color}`}></i>{main.name}</span>}
+  <div class="tile-meta">
+    {p.primaryLanguage && <span class="lang"><i style={`background:${languageColor(p.primaryLanguage)}`}></i>{p.primaryLanguage}</span>}
     {p.isPrivate && <span class="lang"><Icon name="lock" />{d.card.private}</span>}
     {p.stars > 0 && <span class="lang"><Icon name="star" />{p.stars}</span>}
-    <span class="lang" title={d.card.updated}><Icon name="clock" />{formatDate(p.updatedAt, lang)}</span>
+    <span class="lang"><Icon name="clock" /><span class="sr-only">{d.card.updated}: </span><time datetime={p.updatedAt}>{formatDate(p.updatedAt, lang)}</time></span>
   </div>
 </article>

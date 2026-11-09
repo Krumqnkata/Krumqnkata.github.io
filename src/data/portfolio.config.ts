@@ -16,6 +16,8 @@ export interface Override {
   cover?: string;
   /** Extra images shown before the README images. */
   gallery?: string[];
+  /** The language shown on every card and page. Defaults to GitHub's main language. */
+  language?: string;
   /** Short stack list shown on cards. Defaults to the repository languages. */
   stack?: string[];
   links?: { label: Text; url: string }[];
@@ -29,6 +31,10 @@ export interface ManualProject extends Override {
   description: Text;
   category: Category;
   live: string;
+  /** Shown in the "Client work" section. */
+  client?: boolean;
+  /** Bullet points for the client work section. */
+  highlights?: { en: string[]; bg: string[] };
   /** ISO date used for sorting. */
   date: string;
   stack: string[];
@@ -45,16 +51,23 @@ const config = {
   hidden: ['Krumqnkata', 'Krumqnkata.github.io', 'league-of-assholes'],
 
   /** Shown first, in this order, as large cards. Repository names or manual slugs. */
-  featured: [
-    'extruda',
-    'PGKNMA-Blog',
-    'stara-zagora-transit',
-    'noise-measure-tool',
-    'python-raw-processor',
-    'mydesk',
-    'become-millionaire',
-    'terminal-game',
+  featured: ['extruda', 'PGKNMA-Blog', 'noise-measure-tool', 'mydesk', 'stara-zagora-transit'],
+
+  /** Older or smaller repositories: listed last, behind "Show more". */
+  minor: [
+    'HTML-Portfolio',
+    'CoffeeMachine',
+    'School-Bell',
+    'facebook-post-down',
+    'project-troll-site',
+    'cv-creator-hub',
+    'wordpress-history-portal-plugin',
+    'calorie-compass',
+    'receptopis-react-project',
   ],
+
+  /** How many projects "All projects" shows before "Show more". */
+  initialVisible: 9,
 
   /** child repository → parent repository. The child becomes part of the parent's page. */
   merge: {
@@ -125,6 +138,8 @@ const config = {
         bg: 'Шумомер в реално време в браузъра: циферблат в dB, разпознаване на източника с YAMNet, спектър и третинооктавни ленти, шумова доза, норми на ЕС и България, записи и протоколи за печат.',
       },
       category: 'tools',
+      // GitHub counts the static frontend as JavaScript; the app itself is Python.
+      language: 'Python',
       stack: ['Python', 'FastAPI', 'WebSocket', 'Tailwind', 'SQLite', 'YAMNet'],
     },
     'python-raw-processor': {
@@ -323,6 +338,22 @@ const config = {
         bg: 'Интерфейс, двуезични страници и цялостно представяне на сайта.',
       },
       category: 'web',
+      client: true,
+      language: 'HTML',
+      highlights: {
+        en: [
+          'Bulgarian and English versions with a language switch',
+          'Responsive layout, from phones to large screens',
+          'Clear service pages, FAQ, reviews and contact with a call button',
+          'Search-engine metadata and social previews',
+        ],
+        bg: [
+          'Български и английски вариант с превключвател',
+          'Адаптивен дизайн — от телефон до голям екран',
+          'Ясни страници за услугите, въпроси, отзиви и контакт с бутон за обаждане',
+          'SEO метаданни и визитки за социалните мрежи',
+        ],
+      },
       live: 'https://logopedkrumova.com',
       date: '2026-08-07T00:00:00Z',
       stack: ['HTML', 'CSS', 'JavaScript', 'Responsive design', 'SEO'],

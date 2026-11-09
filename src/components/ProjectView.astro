@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from './Icon.astro';
-import type { Project } from '../lib/projects.ts';
+import Cover from './Cover.astro';
+import { shotAlt, languageColor, type Project } from '../lib/projects.ts';
 import { t, homePath, projectPath, other, formatDate, type Lang } from '../i18n/index.ts';
 
 interface Props { project: Project; lang: Lang }
@@ -11,14 +12,18 @@ const f = d.project.facts;
 const primary = p.repos[0];
 const readme = p.readme[lang];
 const single = p.images.length === 1;
+const path = primary ? `~/projects/${primary.name}` : `~/projects/${p.slug}`;
+const shots = p.images.map((img, i) => ({ ...img, alt: shotAlt(p, lang, i, img.alt) }));
 ---
 <Base lang={lang} title={p.title[lang]} description={p.description[lang]} altPath={projectPath(other(lang), p.slug)} image={p.cover}>
   <div class="wrap">
-    <nav class="crumbs"><a href={`${homePath(lang)}#projects`}><Icon name="back" />{d.project.back}</a></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href={`${homePath(lang)}#all`}><Icon name="back" />cd ..</a> <span aria-hidden="true" style="color:var(--muted)">· {path}</span><span class="sr-only">{d.project.back}</span></nav>
 
     <header class="phead">
       <div class="badges">
         <span class="chip chip-accent">{d.categories[p.category]}</span>
+        {p.isClient && <span class="chip chip-client">{d.client.badge}</span>}
+        {p.primaryLanguage && <span class="chip"><span class="lang"><i style={`background:${languageColor(p.primaryLanguage)}`}></i>{p.primaryLanguage}</span></span>}
         {p.isPrivate && <span class="chip"><Icon name="lock" />{d.card.private}</span>}
         {p.workflows.map((w) => (
           <a href={w.url} target="_blank" rel="noopener"><img src={w.badge} alt={`${w.name} status`} height="20" /></a>
@@ -47,16 +52,20 @@ const single = p.images.length === 1;
           </div>
         )}
 
-        {p.images.length > 0 && (
-          <section>
+        {shots.length > 0 ? (
+          <section id="gallery">
             <h2>{d.project.gallery}</h2>
             <div class={`gallery${single ? ' single' : ''}`}>
-              {p.images.map((img, i) => (
-                <button type="button" data-lightbox={img.src} data-caption={img.alt} aria-label={img.alt || `${d.project.gallery} ${i + 1}`}>
-                  <img src={img.src} alt={img.alt} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+              {shots.map((img, i) => (
+                <button type="button" data-lightbox={img.src} data-caption={img.alt} aria-label={img.alt} aria-haspopup="dialog">
+                  <img src={img.src} alt="" loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
                 </button>
               ))}
             </div>
+          </section>
+        ) : (
+          <section id="gallery">
+            <Cover project={p} lang={lang} class="win" />
           </section>
         )}
 
@@ -130,7 +139,7 @@ const single = p.images.length === 1;
   </div>
 
   <dialog class="lightbox" data-lightbox-dialog>
-    <form method="dialog"><button class="close" aria-label="Close">×</button></form>
+    <form method="dialog"><button class="close" aria-label={lang === 'bg' ? 'Затвори' : 'Close'}>×</button></form>
     <img src="" alt="" />
     <p></p>
   </dialog>
@@ -140,8 +149,11 @@ const single = p.images.length === 1;
       if (!dialog || !dialog.showModal) return;
       var img = dialog.querySelector('img');
       var cap = dialog.querySelector('p');
+      var opener = null;
+      dialog.addEventListener('close', function () { if (opener) opener.focus(); });
       document.querySelectorAll('[data-lightbox]').forEach(function (btn) {
         btn.addEventListener('click', function () {
+          opener = btn;
           img.src = btn.dataset.lightbox;
           img.alt = btn.dataset.caption || '';
           cap.textContent = btn.dataset.caption || '';

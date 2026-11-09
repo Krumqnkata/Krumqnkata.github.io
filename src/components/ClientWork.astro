@@ -1,0 +1,53 @@
+---
+import Icon from './Icon.astro';
+import Window from './Window.astro';
+import Prompt from './Prompt.astro';
+import config from '../data/portfolio.config.ts';
+import { shotAlt, type Project } from '../lib/projects.ts';
+import { t, projectPath, type Lang } from '../i18n/index.ts';
+interface Props { project: Project; lang: Lang }
+const { project: p, lang } = Astro.props;
+const d = t(lang);
+const manual = config.manual.find((m) => m.slug === p.slug);
+const host = p.live.replace(/^https?:\/\//, '').replace(/\/$/, '');
+---
+<section class="block" id="client" aria-labelledby="client-title">
+  <div class="wrap">
+    <Prompt dir="~/clients" cmd={`ssh ${host}`} />
+    <div class="section-head">
+      <div>
+        <h2 id="client-title">{d.client.kicker}</h2>
+        <p>{d.client.lead}</p>
+      </div>
+    </div>
+    <Window class="client" title={`~/clients/${host} — firefox`}>
+      <div class="client-shots">
+        <div class="client-desktop">
+          {p.cover && <img src={p.cover} alt={shotAlt(p, lang)} loading="lazy" decoding="async" />}
+        </div>
+        {p.coverMobile && (
+          <div class="client-phone">
+            <img src={p.coverMobile} alt={d.client.phoneAlt} loading="lazy" decoding="async" />
+          </div>
+        )}
+      </div>
+      <div class="client-info">
+        <div class="row"><span class="chip chip-client">{d.client.badge}</span> <span class="chip">{host}</span></div>
+        <h3><a href={projectPath(lang, p.slug)} style="color:inherit;text-decoration:none">{p.title[lang]}</a></h3>
+        <p>{p.description[lang]}</p>
+        {manual?.highlights && (
+          <>
+            <h4>{d.client.did}</h4>
+            <ul>{manual.highlights[lang].map((h) => <li>{h}</li>)}</ul>
+          </>
+        )}
+        <div class="row" style="display:flex;flex-wrap:wrap;gap:6px">{p.stack.map((s) => <span class="chip">{s}</span>)}</div>
+        <div class="hero-actions" style="margin-top:4px">
+          <a class="btn btn-primary btn-sm" href={p.live} target="_blank" rel="noopener"><Icon name="external" />{host}</a>
+          {p.links.map((l) => <a class="btn btn-ghost btn-sm" href={l.url} target="_blank" rel="noopener">{l.label[lang]}</a>)}
+        </div>
+        <p class="client-cta">{d.client.cta} <a href="#contact">{d.client.ctaLink} →</a></p>
+      </div>
+    </Window>
+  </div>
+</section>

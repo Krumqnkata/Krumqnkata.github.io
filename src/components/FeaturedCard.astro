@@ -1,33 +1,50 @@
 ---
 import Icon from './Icon.astro';
-import type { Project } from '../lib/projects.ts';
-import { t, projectPath, type Lang } from '../i18n/index.ts';
+import Window from './Window.astro';
+import Cover from './Cover.astro';
+import { languageColor, shotAlt, type Project } from '../lib/projects.ts';
+import { t, projectPath, formatDate, type Lang } from '../i18n/index.ts';
 interface Props { project: Project; lang: Lang; eager?: boolean }
 const { project: p, lang, eager = false } = Astro.props;
 const d = t(lang);
 const href = projectPath(lang, p.slug);
+const path = p.repos[0] ? `~/projects/${p.repos[0].name}` : `~/projects/${p.slug}`;
+const thumbs = p.images.filter((img) => img.src !== p.cover).slice(0, 3);
+const headingId = `fp-${p.slug}`;
 ---
-<article class="fcard">
-  <div class="fcard-media">
-    {p.cover
-      ? <img src={p.cover} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" />
-      : <div class="fcard-placeholder" aria-hidden="true">{p.title[lang]}</div>}
+<Window as="article" class="fp" title={path} labelledby={headingId}>
+  <div class="fp-media">
+    <Cover project={p} lang={lang} eager={eager} />
+    {thumbs.length > 0 && (
+      <div class="fp-thumbs">
+        {thumbs.map((img, i) => (
+          <a href={`${href}#gallery`} aria-label={shotAlt(p, lang, i + 1, img.alt)}>
+            <img src={img.src} alt="" loading="lazy" decoding="async" />
+          </a>
+        ))}
+      </div>
+    )}
   </div>
-  <div class="fcard-body">
+  <div class="fp-info">
     <div class="row">
       <span class="chip chip-accent">{d.categories[p.category]}</span>
-      {p.isPrivate && <span class="chip"><Icon name="lock" />{d.card.private}</span>}
       {p.stars > 0 && <span class="chip"><Icon name="star" />{p.stars}</span>}
     </div>
-    <h3><a href={href}>{p.title[lang]}</a></h3>
+    <h3 id={headingId}><a href={href}>{p.title[lang]}</a></h3>
     <p>{p.description[lang]}</p>
+    <p class="lsl">
+      <span class="perm">drwxr-xr-x</span>
+      {p.primaryLanguage && <span class="lang"><i style={`background:${languageColor(p.primaryLanguage)}`}></i>{p.primaryLanguage}</span>}
+      {p.license && <span>{p.license}</span>}
+      <span><time datetime={p.updatedAt}>{formatDate(p.updatedAt, lang)}</time></span>
+    </p>
     <div class="row">
-      {p.stack.slice(0, 6).map((s) => <span class="chip mono">{s}</span>)}
+      {p.stack.slice(1, 6).map((s) => <span class="chip">{s}</span>)}
     </div>
     <div class="actions">
-      {p.live && <a class="btn btn-primary btn-sm" href={p.live} target="_blank" rel="noopener"><Icon name="external" />{d.card.live}</a>}
-      {p.repos[0] && <a class="btn btn-ghost btn-sm" href={p.repos[0].url} target="_blank" rel="noopener"><Icon name="github" />{d.card.code}</a>}
-      <a class="btn btn-ghost btn-sm" href={href}>{d.card.details}<Icon name="arrow" /></a>
+      {p.live && <a class="btn btn-primary btn-sm" href={p.live} target="_blank" rel="noopener"><Icon name="external" />{d.card.live}<span class="sr-only">: {p.title[lang]}</span></a>}
+      {p.repos[0] && <a class="btn btn-ghost btn-sm" href={p.repos[0].url} target="_blank" rel="noopener"><Icon name="github" />{d.card.code}<span class="sr-only">: {p.title[lang]}</span></a>}
+      <a class="btn btn-ghost btn-sm" href={href}>{d.card.details}<span class="sr-only">: {p.title[lang]}</span><Icon name="arrow" /></a>
     </div>
   </div>
-</article>
+</Window>

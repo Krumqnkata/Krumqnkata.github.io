@@ -1,0 +1,13 @@
+---
+// A desktop-style window: title bar with traffic-light dots and a body.
+interface Props { title: string; id?: string; class?: string; as?: 'section' | 'div' | 'article' | 'figure'; labelledby?: string }
+const { title, id, class: cls = '', as: Tag = 'div', labelledby } = Astro.props;
+---
+<Tag class={`win ${cls}`} id={id} aria-labelledby={labelledby}>
+  <div class="win-bar" aria-hidden="true">
+    <span class="win-dots"><i></i><i></i><i></i></span>
+    <span class="win-title">{title}</span>
+    <span class="win-ctrl">–□×</span>
+  </div>
+  <div class="win-body"><slot /></div>
+</Tag>
