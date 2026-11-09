@@ -6,7 +6,7 @@ const en = {
   locale: 'en-GB',
   siteTitle: 'Krum — Krumqnkata · Portfolio',
   siteDescription:
-    'Student developer from Stara Zagora, Bulgaria. School platforms, desktop tools and practical web services in Python, Java, TypeScript and Linux.',
+    'Student developer from Stara Zagora, Bulgaria. Web apps, desktop tools, games and 3D-printing utilities in Python, Java, TypeScript and Linux.',
   nav: { projects: 'Projects', about: 'About', activity: 'Activity', contact: 'Contact' },
   switchTo: 'BG',
   switchLabel: 'Прочети на български',
@@ -15,7 +15,9 @@ const en = {
     hello: "Hi, I'm",
     name: 'Krum',
     handle: 'Krumqnkata',
-    lead: 'Student developer from <strong>Stara Zagora, Bulgaria</strong>, studying at <strong>PGKNMA “Prof. Minko Balkanski”</strong>. I build school platforms, desktop tools and practical services, from the interface and API through to deployment.',
+    lead: 'Student developer from <strong>Stara Zagora, Bulgaria</strong>. I build web apps, desktop tools, small games and things for my 3D printer — from the interface and API all the way to the server.',
+    photoAlt: 'Photo of Krum',
+    printed: 'printed 100%',
     ctaProjects: 'See my projects',
     ctaGithub: 'GitHub profile',
   },
@@ -34,11 +36,11 @@ const en = {
     title: 'About me',
     body: [
       'I work with <strong>Python, Java, web technologies and Linux</strong>. I like taking an idea all the way: designing the interface, writing the API, setting up the database and keeping the server running.',
-      'I take part in school technology projects and IT club activities, sharing practical programming experience and building useful tools with the school community.',
+      'Most of my projects start with a real problem around me — a bus timetable, a noisy room, a photo that needs editing — and end as a tool other people actually use.',
     ],
     beyondTitle: 'Beyond the code',
     beyond:
-      'I experiment with <strong>Arduino and RFID</strong>, work with <strong>3D printing</strong> and prepare <strong>audio for school projects</strong>. I enjoy the point where software meets a physical device, a printed object or something people hear and use.',
+      'I experiment with <strong>Arduino and RFID</strong>, work with <strong>3D printing</strong> and prepare <strong>audio</strong>. I enjoy the point where software meets a physical device, a printed object or something people hear and use.',
     toolkit: 'Toolkit',
   },
   activity: {
@@ -69,6 +71,14 @@ const en = {
     viewOnGithub: 'View on GitHub',
     related: 'Part of this project',
   },
+  game: {
+    toggle: 'Game mode',
+    on: 'Turn game mode on',
+    off: 'Turn game mode off',
+    help: 'Drive the little bus across the page and catch the bugs. ← → to move, ↑ or Space to jump, Esc to stop.',
+    score: 'bugs fixed',
+    win: 'All bugs fixed — ship it! 🚀',
+  },
   notFound: { title: 'Page not found', body: 'This page does not exist, but my projects do.', home: 'Back home' },
 };
 
@@ -79,7 +89,7 @@ const bg: Dict = {
   locale: 'bg-BG',
   siteTitle: 'Крум — Krumqnkata · Портфолио',
   siteDescription:
-    'Ученик-програмист от Стара Загора. Училищни платформи, настолни приложения и практични уеб услуги с Python, Java, TypeScript и Linux.',
+    'Ученик-програмист от Стара Загора. Уеб приложения, настолни програми, игри и инструменти за 3D печат с Python, Java, TypeScript и Linux.',
   nav: { projects: 'Проекти', about: 'За мен', activity: 'Активност', contact: 'Контакт' },
   switchTo: 'EN',
   switchLabel: 'Read in English',
@@ -88,7 +98,9 @@ const bg: Dict = {
     hello: 'Здравей, аз съм',
     name: 'Крум',
     handle: 'Krumqnkata',
-    lead: 'Ученик-програмист от <strong>Стара Загора</strong>, уча в <strong>ПГКНМА „Проф. Минко Балкански“</strong>. Правя училищни платформи, настолни приложения и практични услуги — от интерфейса и API-то до сървъра.',
+    lead: 'Ученик-програмист от <strong>Стара Загора</strong>. Правя уеб приложения, настолни програми, малки игри и неща за 3D принтера си — от интерфейса и API-то до сървъра.',
+    photoAlt: 'Снимка на Крум',
+    printed: 'отпечатан 100%',
     ctaProjects: 'Виж проектите',
     ctaGithub: 'GitHub профил',
   },
@@ -107,11 +119,11 @@ const bg: Dict = {
     title: 'За мен',
     body: [
       'Работя с <strong>Python, Java, уеб технологии и Linux</strong>. Обичам да водя една идея докрай: интерфейс, API, база данни и сървър, който работи.',
-      'Участвам в училищни технологични проекти и дейностите на ИТ клуба, споделям опит и правя полезни инструменти за училищната общност.',
+      'Повечето ми проекти започват от истински проблем около мен — разписание на автобус, шумна стая, снимка за обработка — и стават инструмент, който хората наистина ползват.',
     ],
     beyondTitle: 'Извън кода',
     beyond:
-      'Експериментирам с <strong>Arduino и RFID</strong>, занимавам се с <strong>3D принтиране</strong> и подготвям <strong>аудио за училищни проекти</strong>. Харесва ми мястото, където софтуерът среща истинско устройство, принтиран предмет или нещо, което хората чуват и ползват.',
+      'Експериментирам с <strong>Arduino и RFID</strong>, занимавам се с <strong>3D принтиране</strong> и подготвям <strong>аудио</strong>. Харесва ми мястото, където софтуерът среща истинско устройство, принтиран предмет или нещо, което хората чуват и ползват.',
     toolkit: 'Технологии',
   },
   activity: {
@@ -141,6 +153,14 @@ const bg: Dict = {
     noReadme: 'Това репо още няма README.',
     viewOnGithub: 'Виж в GitHub',
     related: 'Част от проекта',
+  },
+  game: {
+    toggle: 'Игра',
+    on: 'Включи игровия режим',
+    off: 'Изключи игровия режим',
+    help: 'Карай малкия автобус по страницата и хващай бъговете. ← → за движение, ↑ или интервал за скок, Esc за край.',
+    score: 'оправени бъга',
+    win: 'Всички бъгове са оправени — пускай! 🚀',
   },
   notFound: { title: 'Няма такава страница', body: 'Тази страница не съществува, но проектите ми — да.', home: 'Към началото' },
 };

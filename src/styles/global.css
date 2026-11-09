@@ -408,3 +408,79 @@ section.block { padding: 56px 0; }
 .repo-list .i { width: 16px; height: 16px; }
 .search .i { position: absolute; left: 13px; top: 12px; width: 18px; height: 18px; color: var(--muted); }
 .theme-btn span { display: inline-flex; }
+
+/* ---------- Hero portrait (prints itself layer by layer) ---------- */
+.hero-side { position: relative; display: grid; justify-items: center; gap: 0; }
+.portrait { position: relative; margin: 0; width: min(100%, 340px); }
+.portrait-print {
+  position: relative; aspect-ratio: 1; border-radius: 28px; overflow: hidden;
+  background: repeating-linear-gradient(0deg, var(--grid-dot) 0 2px, transparent 2px 9px), var(--surface-2);
+  border: 1px solid var(--border-strong); box-shadow: var(--shadow-lg);
+}
+.portrait-print img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.portrait.wait .portrait-print img { clip-path: inset(100% 0 0 0); }
+.portrait.go .portrait-print img { clip-path: inset(100% 0 0 0); animation: print-layers 2.6s steps(26, end) .25s forwards; }
+.nozzle {
+  position: absolute; left: -10%; right: -10%; height: 3px; bottom: 0;
+  background: linear-gradient(90deg, transparent, var(--accent) 20%, #fff 50%, var(--accent) 80%, transparent);
+  box-shadow: 0 0 18px 4px color-mix(in srgb, var(--accent) 55%, transparent);
+  opacity: 0;
+}
+.portrait.wait .nozzle { opacity: 1; }
+.portrait.go .nozzle { opacity: 1; animation: nozzle-up 2.6s steps(26, end) .25s forwards, nozzle-off .4s ease 2.9s forwards; }
+@keyframes print-layers { to { clip-path: inset(0 0 0 0); } }
+@keyframes nozzle-up { to { bottom: 100%; } }
+@keyframes nozzle-off { to { opacity: 0; } }
+.portrait figcaption {
+  position: absolute; top: 14px; left: 14px; display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11.5px; padding: 5px 10px; border-radius: 999px; color: var(--text);
+  background: color-mix(in srgb, var(--surface) 82%, transparent); backdrop-filter: blur(6px); border: 1px solid var(--border);
+}
+.portrait.wait figcaption { opacity: 0; }
+.portrait.go figcaption { opacity: 0; animation: fade-in .4s ease 2.9s forwards; }
+.pdot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+@keyframes fade-in { to { opacity: 1; } }
+.hero-side .terminal { width: min(100%, 280px); margin-top: -46px; justify-self: end; position: relative; z-index: 2; }
+@media (min-width: 900px) { .hero-side { justify-items: end; } .portrait { margin-right: 56px; } }
+.hero-side .terminal-body { padding: 14px 14px 16px; gap: 8px; }
+.hero-side .stat { padding: 9px 12px; }
+.hero-side .stat strong { font-size: 22px; }
+@media (max-width: 899px) { .hero-side .terminal { justify-self: center; margin-top: -36px; } }
+@media (prefers-reduced-motion: reduce) {
+  .portrait .portrait-print img { clip-path: none !important; }
+  .nozzle { display: none; }
+  .portrait figcaption { opacity: 1 !important; }
+}
+
+/* ---------- Game mode ---------- */
+.game-toggle { position: fixed; right: 16px; bottom: 16px; z-index: 60; display: flex; gap: 6px; align-items: center; }
+.game-toggle button {
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  font: 600 12px var(--mono); text-transform: uppercase; letter-spacing: .08em;
+  color: var(--text-soft); background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--border-strong); backdrop-filter: blur(8px); box-shadow: var(--shadow);
+}
+.game-toggle button:hover { color: var(--accent); border-color: var(--accent); }
+.game-toggle .gdot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); transition: background .2s, box-shadow .2s; }
+.game-toggle button[aria-pressed='true'] { color: var(--accent); border-color: var(--accent); }
+.game-toggle button[aria-pressed='true'] .gdot { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+.game-toggle .gscore { font-variant-numeric: tabular-nums; }
+.game-help {
+  position: fixed; right: 16px; bottom: 64px; z-index: 60; max-width: min(320px, calc(100vw - 32px));
+  padding: 12px 14px; border-radius: 12px; font-size: 13.5px; color: var(--text-soft);
+  background: var(--surface); border: 1px solid var(--border-strong); box-shadow: var(--shadow-lg);
+}
+.game-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 55; pointer-events: none; }
+.game-pad { position: fixed; left: 16px; bottom: 16px; z-index: 60; display: flex; gap: 8px; }
+.game-pad button {
+  width: 54px; height: 54px; border-radius: 16px; font-size: 22px; color: var(--text); touch-action: none; user-select: none;
+  background: color-mix(in srgb, var(--surface) 80%, transparent); border: 1px solid var(--border-strong); backdrop-filter: blur(8px);
+}
+.game-pad button:active { background: var(--accent-soft); border-color: var(--accent); }
+.game-toast {
+  position: fixed; left: 50%; top: 84px; transform: translateX(-50%); z-index: 61; padding: 10px 18px; border-radius: 999px;
+  background: var(--accent); color: var(--accent-ink); font-weight: 800; box-shadow: var(--shadow-lg);
+  animation: fade-in .2s ease;
+}

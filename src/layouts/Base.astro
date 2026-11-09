@@ -92,6 +92,20 @@ const ogImage = image || 'https://raw.githubusercontent.com/Krumqnkata/Krumqnkat
         </span>
       </div>
     </footer>
+    <div class="game-toggle" data-game data-on={d.game.on} data-off={d.game.off} data-win={d.game.win}>
+      <button type="button" aria-pressed="false" aria-label={d.game.on} title={d.game.help} data-game-toggle>
+        <span class="gdot" aria-hidden="true"></span>{d.game.toggle}<span class="gscore" data-game-score hidden></span>
+      </button>
+    </div>
+    <p class="game-help" data-game-help role="status" hidden>{d.game.help}</p>
+    <div class="game-pad" data-game-pad hidden>
+      <button type="button" data-pad="left" aria-label="Left">◀</button>
+      <button type="button" data-pad="right" aria-label="Right">▶</button>
+      <button type="button" data-pad="jump" aria-label="Jump">▲</button>
+    </div>
+    <script>
+      import '../scripts/game.ts';
+    </script>
     <script is:inline>
       (function () {
         var btn = document.querySelector('[data-theme-toggle]');

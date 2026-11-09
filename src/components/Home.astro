@@ -4,7 +4,7 @@ import Icon from './Icon.astro';
 import FeaturedCard from './FeaturedCard.astro';
 import ProjectCard from './ProjectCard.astro';
 import config from '../data/portfolio.config.ts';
-import { projects, featured, totals, generatedAt, categoriesInUse, languageColor } from '../lib/projects.ts';
+import { projects, featured, totals, generatedAt, categoriesInUse, languageColor, profile } from '../lib/projects.ts';
 import { t, homePath, other, formatDate, type Lang } from '../i18n/index.ts';
 
 interface Props { lang: Lang }
@@ -18,24 +18,32 @@ const counts = Object.fromEntries(categoriesInUse.map((c) => [c, projects.filter
     <div class="wrap">
       <div>
         <p class="prompt"><b>~/stara-zagora</b> $ whoami</p>
-        <h1>{d.hero.hello} <em>{d.hero.name}</em>.<span class="handle">@{d.hero.handle} · PGKNMA · Python · Java · Web · Linux</span></h1>
+        <h1>{d.hero.hello} <em>{d.hero.name}</em>.<span class="handle">@{d.hero.handle} · Python · Java · Web · Linux · 3D</span></h1>
         <p class="lead" set:html={d.hero.lead} />
         <div class="hero-actions">
           <a class="btn btn-primary" href="#projects">{d.hero.ctaProjects}<Icon name="arrow" /></a>
           <a class="btn btn-ghost" href={`https://github.com/${config.owner}`} target="_blank" rel="noopener"><Icon name="github" />{d.hero.ctaGithub}</a>
         </div>
       </div>
-      <div class="terminal" aria-label="Stats">
-        <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
-        <div class="terminal-body">
-          <p class="cmd"><b>$</b> gh repo list {config.owner} --public</p>
-          <div class="stat-row">
-            <div class="stat"><strong>{totals.projects}</strong><span>{d.stats.projects}</span></div>
-            <div class="stat"><strong>{totals.languages}</strong><span>{d.stats.languages}</span></div>
-            <div class="stat"><strong>{featured.length}</strong><span>{d.featured.toLowerCase()}</span></div>
-            <div class="stat"><strong>{totals.live}</strong><span>{d.stats.live}</span></div>
+      <div class="hero-side">
+        <figure class="portrait wait">
+          <noscript><style>.portrait.wait .portrait-print img { clip-path: none !important; } .portrait.wait figcaption { opacity: 1 !important; } .nozzle { display: none; }</style></noscript>
+          <div class="portrait-print">
+            <img src={`${profile.avatar}${profile.avatar.includes('?') ? '&' : '?'}s=640`} alt={d.hero.photoAlt} width="320" height="320" fetchpriority="high" />
+            <span class="nozzle" aria-hidden="true"></span>
           </div>
-          <p class="cmd"><b>✓</b> {d.stats.updated} {formatDate(generatedAt, lang, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          <figcaption class="mono"><span class="pdot" aria-hidden="true"></span>krum.stl · {d.hero.printed}</figcaption>
+        </figure>
+        <div class="terminal" aria-label="Stats">
+          <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="terminal-body">
+            <p class="cmd"><b>$</b> gh repo list --public</p>
+            <div class="stat-row">
+              <div class="stat"><strong>{totals.projects}</strong><span>{d.stats.projects}</span></div>
+              <div class="stat"><strong>{totals.live}</strong><span>{d.stats.live}</span></div>
+            </div>
+            <p class="cmd"><b>✓</b> {d.stats.updated} {formatDate(generatedAt, lang, { day: 'numeric', month: 'short' })}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -161,6 +169,18 @@ const counts = Object.fromEntries(categoriesInUse.map((c) => [c, projects.filter
     </div>
   </section>
 
+  <script is:inline>
+    (function () {
+      // Start the "3D print" of the portrait when it scrolls into view.
+      var portrait = document.querySelector('.portrait');
+      if (!portrait) return;
+      if (!('IntersectionObserver' in window)) { portrait.classList.replace('wait', 'go'); return; }
+      var io = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) { portrait.classList.replace('wait', 'go'); io.disconnect(); }
+      }, { threshold: 0.35 });
+      io.observe(portrait);
+    })();
+  </script>
   <script is:inline>
     (function () {
       var grid = document.querySelector('[data-grid]');

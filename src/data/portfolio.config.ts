@@ -46,8 +46,8 @@ const config = {
 
   /** Shown first, in this order, as large cards. Repository names or manual slugs. */
   featured: [
-    'PGKNMA-Blog',
     'extruda',
+    'PGKNMA-Blog',
     'stara-zagora-transit',
     'noise-measure-tool',
     'python-raw-processor',
