@@ -5,6 +5,7 @@ import Prompt from '../Prompt.astro';
 import config from '../../data/portfolio.config.ts';
 import { t, formatDate, type Lang } from '../../i18n/index.ts';
 import { totals, generatedAt, profile } from '../../lib/projects.ts';
+import { streak } from '../../lib/github.ts';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t(lang);
@@ -58,6 +59,7 @@ const pre = lang === 'en' ? '' : '/bg';
             <div><dt>{d.neofetch.shell}:</dt><dd>python · ts · java</dd></div>
             <div><dt>{d.neofetch.projects}:</dt><dd>{totals.projects}</dd></div>
             <div><dt>{d.neofetch.live}:</dt><dd>{totals.live}</dd></div>
+            {streak.current > 0 && <div><dt>{d.gh.streakLine}:</dt><dd>🔥 {streak.current} {d.gh.days}</dd></div>}
             <div><dt>{d.neofetch.uptime}:</dt><dd><time datetime={generatedAt}>{formatDate(generatedAt, lang, { day: 'numeric', month: 'short' })}</time></dd></div>
           </dl>
           <div class="swatches" aria-hidden="true" style="grid-column: 1 / -1">

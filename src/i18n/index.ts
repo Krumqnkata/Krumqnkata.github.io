@@ -126,7 +126,7 @@ const en = {
       groups: { sections: 'Sections', projects: 'Projects', actions: 'Actions', pages: 'Pages', secrets: 'Achievements' },
       actions: {
         theme: 'Toggle light / dark theme', lang: 'Switch to Bulgarian', game: 'Play: bus game mode', snake: 'Play: snake on the calendar',
-        screensaver: 'Start the screensaver', reboot: 'Reboot KrumOS', github: 'Open GitHub profile', email: 'Write me an email', terminal: 'Focus the terminal',
+        screensaver: 'Start the screensaver', reboot: 'Reboot KrumOS', badges: 'GitHub achievements', github: 'Open GitHub profile', email: 'Write me an email', terminal: 'Focus the terminal',
       },
     },
     term: {
@@ -140,7 +140,7 @@ const en = {
         lang: 'lang bg|en', game: 'start the bus game', snake: 'play snake on the calendar', achievements: 'secrets you found',
         uses: 'what I work with', timeline: 'projects over time', guestbook: 'sign the guestbook', reboot: 'reboot KrumOS',
         clear: 'clear the screen', history: 'command history', date: 'current date', uname: 'system name', echo: 'print text',
-        man: 'manual for a command', exit: 'minimise the terminal',
+        man: 'manual for a command', exit: 'minimise the terminal', gh: 'gh stats | gh badges — my GitHub numbers and achievements',
       } as Record<string, string>,
       whoami: 'krum — student developer from Stara Zagora. Web apps, desktop tools, games and 3D printing.',
       lsSections: 'Sections:', lsProjects: 'Projects:', lsTip: "Try 'open extruda' or 'cat noise-measure-tool'.",
@@ -176,6 +176,18 @@ const en = {
     boot: { skip: 'Press any key to skip' },
     notify: { newProject: 'New project', open: 'Open', dismiss: 'Dismiss', today: 'today', yesterday: 'yesterday', daysAgo: 'days ago' },
     gitlog: { title: 'Latest commits', lead: 'What I pushed to GitHub recently — straight from git log.', empty: 'No recent commits.' },
+  },
+  gh: {
+    statsTitle: 'GitHub in numbers',
+    statsLead: 'Straight from my GitHub profile, refreshed every day.',
+    commits: 'commits this year', prs: 'pull requests this year', repos: 'repositories with my commits', private: 'private contributions',
+    streak: 'current streak', longest: 'longest streak', best: 'busiest day', since: 'on GitHub since', active: 'active days this year',
+    days: 'days',
+    badgesTitle: 'GitHub achievements', badgesLead: 'Badges GitHub awarded me for real activity on the platform.', unlocked: 'Unlocked',
+    allBadges: 'All achievements', badgesShort: 'GitHub achievements',
+    contribTitle: 'Contributions to other projects', contribLead: "Public repositories of other people I've written code for.",
+    sponsorTitle: 'I sponsor', sponsorLead: 'I support open source through GitHub Sponsors:',
+    socials: 'Find me on', streakLine: 'Streak',
   },
   notFound: { title: 'Page not found', body: 'No such file or directory — but my projects exist.', home: 'cd ~' },
 };
@@ -307,7 +319,7 @@ const bg: Dict = {
       groups: { sections: 'Секции', projects: 'Проекти', actions: 'Действия', pages: 'Страници', secrets: 'Постижения' },
       actions: {
         theme: 'Смени светла / тъмна тема', lang: 'Switch to English', game: 'Игра: автобусът', snake: 'Игра: змия по календара',
-        screensaver: 'Пусни скрийнсейвъра', reboot: 'Рестартирай KrumOS', github: 'Отвори GitHub профила', email: 'Пиши ми имейл', terminal: 'Към терминала',
+        screensaver: 'Пусни скрийнсейвъра', reboot: 'Рестартирай KrumOS', badges: 'Постижения в GitHub', github: 'Отвори GitHub профила', email: 'Пиши ми имейл', terminal: 'Към терминала',
       },
     },
     term: {
@@ -321,7 +333,7 @@ const bg: Dict = {
         lang: 'lang bg|en', game: 'играта с автобуса', snake: 'змия по календара', achievements: 'откритите тайни',
         uses: 'с какво работя', timeline: 'проектите във времето', guestbook: 'книгата за гости', reboot: 'рестартирай KrumOS',
         clear: 'изчисти екрана', history: 'история на командите', date: 'днешната дата', uname: 'име на системата', echo: 'отпечатай текст',
-        man: 'наръчник за команда', exit: 'минимизирай терминала',
+        man: 'наръчник за команда', exit: 'минимизирай терминала', gh: 'gh stats | gh badges — числата и постиженията ми в GitHub',
       } as Record<string, string>,
       whoami: 'krum — ученик-програмист от Стара Загора. Уеб приложения, настолни програми, игри и 3D печат.',
       lsSections: 'Секции:', lsProjects: 'Проекти:', lsTip: "Пробвай 'open extruda' или 'cat noise-measure-tool'.",
@@ -357,6 +369,18 @@ const bg: Dict = {
     boot: { skip: 'Натисни клавиш за пропускане' },
     notify: { newProject: 'Нов проект', open: 'Отвори', dismiss: 'Затвори', today: 'днес', yesterday: 'вчера', daysAgo: 'дни' },
     gitlog: { title: 'Последни commit-и', lead: 'Какво съм качил в GitHub наскоро — направо от git log.', empty: 'Няма скорошни commit-и.' },
+  },
+  gh: {
+    statsTitle: 'GitHub в числа',
+    statsLead: 'Направо от GitHub профила ми, обновява се всеки ден.',
+    commits: 'commit-а тази година', prs: 'pull request-а тази година', repos: 'репота с мои commit-и', private: 'частни приноса',
+    streak: 'текуща серия', longest: 'най-дълга серия', best: 'най-активен ден', since: 'в GitHub от', active: 'активни дни тази година',
+    days: 'дни',
+    badgesTitle: 'Постижения в GitHub', badgesLead: 'Значки, които GitHub ми е дал за реална активност.', unlocked: 'Отключено',
+    allBadges: 'Всички постижения', badgesShort: 'GitHub постижения',
+    contribTitle: 'Принос в чужди проекти', contribLead: 'Публични репота на други хора, в които съм писал код.',
+    sponsorTitle: 'Спонсорирам', sponsorLead: 'Подкрепям open source чрез GitHub Sponsors:',
+    socials: 'Намери ме в', streakLine: 'Серия',
   },
   notFound: { title: 'Няма такава страница', body: 'Няма такъв файл или директория — но проектите ми съществуват.', home: 'cd ~' },
 };

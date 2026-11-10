@@ -35,6 +35,7 @@ function items(): Item[] {
     } },
     { group: g.actions, label: a.screensaver, keywords: 'screensaver idle скрийнсейвър', run: async () => (await import('./screensaver.ts')).startScreensaver() },
     { group: g.actions, label: a.reboot, keywords: 'reboot restart boot рестарт', run: async () => (await import('./boot.ts')).boot(true) },
+    { group: g.actions, label: a.badges, keywords: 'github achievements badges постижения значки', run: () => go(`${d.sections.find((x) => x.id === 'activity')!.path}#gh-badges`) },
     { group: g.actions, label: a.github, keywords: 'github code', run: () => window.open(`https://github.com/${d.owner}`, '_blank', 'noopener') },
     { group: g.actions, label: a.email, keywords: 'email mail contact имейл', run: () => (location.href = `mailto:${d.email}`) },
   );

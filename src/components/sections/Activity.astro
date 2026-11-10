@@ -5,6 +5,9 @@ import Prompt from '../Prompt.astro';
 import config from '../../data/portfolio.config.ts';
 import { t, formatDate, type Lang } from '../../i18n/index.ts';
 import GitLog from '../GitLog.astro';
+import GithubStats from '../GithubStats.astro';
+import Achievements from '../Achievements.astro';
+import Contributions from '../Contributions.astro';
 import { totals, languageColor, contributions } from '../../lib/projects.ts';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -79,7 +82,12 @@ const sinceYear = totals.since ? new Date(totals.since).getFullYear() : '';
           </div>
         )}
       </Window>
-      <div style="height: 22px"></div>
+      <div class="gap"></div>
+      <GithubStats lang={lang} />
+      <div class="gap"></div>
+      <Achievements lang={lang} />
+      <div class="gap"></div>
+      <Contributions lang={lang} />
       <GitLog lang={lang} />
     </div>
   </section>

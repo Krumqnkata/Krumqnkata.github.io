@@ -1,0 +1,30 @@
+---
+// Public repositories of other people that I contributed to (hidden when there are none).
+import Window from './Window.astro';
+import Icon from './Icon.astro';
+import { contributedTo } from '../lib/github.ts';
+import { languageColor } from '../lib/projects.ts';
+import { t, type Lang } from '../i18n/index.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const g = t(lang).gh;
+---
+{contributedTo.length > 0 && (
+  <Window class="contrib" title="git log --author=krum --others" lang={lang}>
+    <h2 class="gitlog-title">{g.contribTitle}</h2>
+    <p class="gitlog-lead">{g.contribLead}</p>
+    <ul class="contrib-grid">
+      {contributedTo.map((r) => (
+        <li class="tile">
+          <span class="tile-top"><img src={`${r.avatar}&s=40`} alt="" width="20" height="20" class="avatar" />{r.owner}</span>
+          <h3><a href={r.url} target="_blank" rel="noopener">{r.name.split('/')[1]}</a></h3>
+          {r.description && <p>{r.description}</p>}
+          <span class="tile-meta">
+            {r.language && <span class="lang"><i style={`background:${languageColor(r.language)}`}></i>{r.language}</span>}
+            {r.stars > 0 && <span class="lang"><Icon name="star" />{r.stars}</span>}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Window>
+)}

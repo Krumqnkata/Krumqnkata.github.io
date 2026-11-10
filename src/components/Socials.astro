@@ -1,0 +1,24 @@
+---
+// GitHub, social accounts listed on the GitHub profile, and email: as buttons or small icons.
+import Icon from './Icon.astro';
+import config from '../data/portfolio.config.ts';
+import { socials } from '../lib/github.ts';
+interface Props { variant?: 'buttons' | 'icons' }
+const { variant = 'buttons' } = Astro.props;
+type IconName = 'github' | 'facebook' | 'instagram' | 'external';
+const iconFor = (provider: string): IconName => (provider === 'facebook' || provider === 'instagram' ? provider : 'external');
+const links: { icon: IconName; label: string; url: string }[] = [
+  { icon: 'github', label: 'GitHub', url: `https://github.com/${config.owner}` },
+  ...socials.map((s) => ({ icon: iconFor(s.provider), label: s.provider.charAt(0).toUpperCase() + s.provider.slice(1), url: s.url })),
+];
+---
+{variant === 'buttons' ? (
+  <div class="hero-actions socials">
+    <a class="btn btn-primary" href={`mailto:${config.email}`}><Icon name="mail" />Email</a>
+    {links.map((l) => <a class="btn btn-ghost" href={l.url} target="_blank" rel="noopener me"><Icon name={l.icon} />{l.label}</a>)}
+  </div>
+) : (
+  <span class="social-icons">
+    {links.map((l) => <a href={l.url} target="_blank" rel="noopener me" aria-label={l.label} title={l.label}><Icon name={l.icon} /></a>)}
+  </span>
+)}

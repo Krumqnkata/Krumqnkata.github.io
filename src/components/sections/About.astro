@@ -5,6 +5,8 @@ import Prompt from '../Prompt.astro';
 import config from '../../data/portfolio.config.ts';
 import { t, formatDate, type Lang } from '../../i18n/index.ts';
 import { languageColor } from '../../lib/projects.ts';
+import Achievements from '../Achievements.astro';
+import { sponsoring } from '../../lib/github.ts';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t(lang);
@@ -20,6 +22,18 @@ const d = t(lang);
             <div class="about-text">
               {d.about.body.map((para) => <p set:html={para} />)}
             </div>
+            <Achievements lang={lang} compact />
+            {sponsoring.length > 0 && (
+              <div class="panel sponsor">
+                <h3>gh sponsor list</h3>
+                <p>{d.gh.sponsorLead}</p>
+                <ul>
+                  {sponsoring.map((s) => (
+                    <li><a href={s.url} target="_blank" rel="noopener"><img src={`${s.avatar}&s=64`} alt="" width="32" height="32" /><span><b>{s.name}</b><small>@{s.login}</small></span></a></li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div class="panel beyond">
               <h3>{d.about.beyondTitle}</h3>
               <p set:html={d.about.beyond} />

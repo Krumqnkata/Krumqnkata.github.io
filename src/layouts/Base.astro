@@ -4,6 +4,7 @@ import Icon from '../components/Icon.astro';
 import config from '../data/portfolio.config.ts';
 import { generatedAt } from '../lib/projects.ts';
 import { osData } from '../lib/osdata.ts';
+import Socials from '../components/Socials.astro';
 import { t, homePath, other, formatDate, type Lang } from '../i18n/index.ts';
 
 interface Props {
@@ -117,7 +118,7 @@ const workspaces = [
     </main>
     <footer class="statusline">
       <div class="inner">
-        <span><span class="tag">[krumos]</span> <em>{d.footer.tagline}</em></span>
+        <span><span class="tag">[krumos]</span> <em>{d.footer.tagline}</em> <Socials variant="icons" /></span>
         <span>
           {d.footer.rebuilt} {formatDate(generatedAt, lang, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
           · <a href={`${pre}/uses/`}>uses</a> · <a href={`${pre}/timeline/`}>timeline</a> · <a href={`${pre}/guestbook/`}>guestbook</a>

@@ -2,6 +2,7 @@
 // Serialised into <script type="application/json" id="krumos-data"> by Base.astro.
 import config from '../data/portfolio.config.ts';
 import { projects, generatedAt, totals } from './projects.ts';
+import { profile, streak, achievements, achievementText } from './github.ts';
 import { t, homePath, projectPath, prefix, type Lang } from '../i18n/index.ts';
 
 const strip = (html: string) => html.replace(/<[^>]+>/g, '');
@@ -25,6 +26,13 @@ export function osData(lang: Lang, altPath: string) {
       path: id === 'home' ? `${pre}/` : `${pre}/${id}/`,
     })),
     about: d.about.body.map(strip),
+    ghs: d.gh,
+    gh: {
+      stats: profile?.stats ?? null,
+      since: profile?.createdAt ?? null,
+      streak,
+      badges: achievements.map((a) => ({ title: achievementText(a, lang).title, count: a.count, text: achievementText(a, lang).text, url: achievementText(a, lang).url })),
+    },
     projects: projects.map((p) => ({
       slug: p.slug,
       name: (p.repos[0]?.name || p.slug).toLowerCase(),

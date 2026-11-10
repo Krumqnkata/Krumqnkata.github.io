@@ -1,0 +1,37 @@
+---
+// "gh api /users/…": numbers from the GitHub profile plus streaks from the calendar.
+import Window from './Window.astro';
+import Icon from './Icon.astro';
+import { profile, streak } from '../lib/github.ts';
+import { t, formatDate, type Lang } from '../i18n/index.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const g = t(lang).gh;
+const nf = new Intl.NumberFormat(lang === 'bg' ? 'bg-BG' : 'en-GB');
+const tiles = profile
+  ? [
+      { v: nf.format(profile.stats.commits), l: g.commits },
+      { v: nf.format(profile.stats.pullRequests), l: g.prs },
+      { v: nf.format(profile.stats.repos), l: g.repos },
+      { v: nf.format(profile.stats.private), l: g.private },
+      { v: `${streak.current}`, l: `${g.streak} (${g.days})`, hot: streak.current > 0 },
+      { v: `${streak.longest}`, l: `${g.longest} (${g.days})` },
+      { v: streak.best.count ? `${streak.best.count}` : '—', l: streak.best.date ? `${g.best} · ${formatDate(streak.best.date, lang, { day: 'numeric', month: 'short' })}` : g.best },
+      { v: formatDate(profile.createdAt, lang, { month: 'short', year: 'numeric' }), l: g.since },
+    ]
+  : [];
+---
+{profile && (
+  <Window class="ghstats" title="gh api /users/krumqnkata" lang={lang} id="gh-stats">
+    <h2 class="gitlog-title">{g.statsTitle}</h2>
+    <p class="gitlog-lead">{g.statsLead}</p>
+    <dl class="tiles">
+      {tiles.map((x) => (
+        <div class={x.hot ? 'tile-stat hot' : 'tile-stat'}>
+          <dt>{x.l}</dt>
+          <dd>{x.hot && <Icon name="flame" />}{x.v}</dd>
+        </div>
+      ))}
+    </dl>
+  </Window>
+)}

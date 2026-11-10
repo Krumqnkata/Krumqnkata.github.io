@@ -221,6 +221,36 @@ export function initTerminal(root: HTMLElement) {
       const win = root.closest<HTMLElement>('.win');
       if (win) window.dispatchEvent(new CustomEvent('krumos:minimize', { detail: win }));
     },
+    gh(args) {
+      const g = d.ghs;
+      const sub = args[0];
+      if (sub === 'badges' || sub === 'achievements') {
+        if (!d.gh.badges.length) return print(muted('—'));
+        print(accent(`🏅 ${g.badgesTitle}`));
+        for (const b of d.gh.badges) print([link(`${b.title}${b.count > 1 ? ` ×${b.count}` : ''}`, b.url, true), muted(b.text ? ` — ${b.text}` : '')]);
+        return;
+      }
+      if (sub === 'stats' || !sub) {
+        const st = d.gh.stats;
+        if (!st) return print(muted('—'));
+        const nf = new Intl.NumberFormat(d.lang === 'bg' ? 'bg-BG' : 'en-GB');
+        const rows: [string, string][] = [
+          [g.commits, nf.format(st.commits)],
+          [g.prs, nf.format(st.pullRequests)],
+          [g.repos, nf.format(st.repos)],
+          [g.private, nf.format(st.private)],
+          [g.streak, `${d.gh.streak.current} ${g.days} 🔥`],
+          [g.longest, `${d.gh.streak.longest} ${g.days}`],
+          [g.best, `${d.gh.streak.best.count} (${d.gh.streak.best.date})`],
+        ];
+        print(accent(`$ gh api /users/${d.owner}`));
+        const box = el('div', 'tty-help');
+        for (const [k, v] of rows) box.append(el('span', 'tty-accent', v), el('span', 'tty-muted', k));
+        print(box);
+        return;
+      }
+      print(`gh: ${sub}: ${s.notFound}. usage: gh stats | gh badges`, 'tty-err');
+    },
     sudo() {
       print(s.sudo, 'tty-err');
       unlock('sudo');
@@ -262,6 +292,7 @@ export function initTerminal(root: HTMLElement) {
     else if (parts[0] === 'cat') pool = ['about.md', ...projectNames];
     else if (parts[0] === 'theme') pool = ['light', 'dark'];
     else if (parts[0] === 'lang') pool = ['bg', 'en'];
+    else if (parts[0] === 'gh') pool = ['stats', 'badges'];
     else pool = projectNames;
     const last = parts[parts.length - 1].toLowerCase();
     const matches = pool.filter((p) => p.startsWith(last));

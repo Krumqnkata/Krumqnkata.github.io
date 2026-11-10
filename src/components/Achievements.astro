@@ -1,0 +1,45 @@
+---
+// GitHub profile achievements: full window (Activity) or a compact strip (About).
+import Window from './Window.astro';
+import { achievements, achievementText } from '../lib/github.ts';
+import { t, formatDate, prefix, type Lang } from '../i18n/index.ts';
+interface Props { lang: Lang; compact?: boolean }
+const { lang, compact = false } = Astro.props;
+const g = t(lang).gh;
+const items = achievements.map((a) => ({ ...a, ...achievementText(a, lang) }));
+const label = (a: (typeof items)[number]) => `${a.title}${a.count > 1 ? ` ×${a.count}` : ''}`;
+---
+{items.length > 0 && (compact ? (
+  <div class="panel badges-strip">
+    <h3>gh achievements</h3>
+    <div class="badges-row">
+      {items.map((a) => (
+        <a href={a.url} target="_blank" rel="noopener" title={label(a)}>
+          <img src={a.image} alt={label(a)} width="56" height="56" loading="lazy" />
+          {a.count > 1 && <span class={`tier tier-${a.tier ?? 'default'}`} aria-hidden="true">×{a.count}</span>}
+        </a>
+      ))}
+    </div>
+    <a class="mono badges-more" href={`${prefix(lang)}/activity/#gh-badges`}>{g.allBadges} →</a>
+  </div>
+) : (
+  <Window class="ghbadges" title="~/.github/achievements" lang={lang} id="gh-badges">
+    <h2 class="gitlog-title">{g.badgesTitle}</h2>
+    <p class="gitlog-lead">{g.badgesLead}</p>
+    <ul class="badge-grid">
+      {items.map((a) => (
+        <li>
+          <a class="badge-card" href={a.url} target="_blank" rel="noopener">
+            <span class="badge-img">
+              <img src={a.image} alt="" width="96" height="96" loading="lazy" />
+              {a.count > 1 && <span class={`tier tier-${a.tier ?? 'default'}`}>×{a.count}</span>}
+            </span>
+            <strong>{a.title}</strong>
+            {a.text && <span class="badge-text">{a.text}</span>}
+            {a.unlockedAt && <span class="badge-date">{g.unlocked}: <time datetime={a.unlockedAt}>{formatDate(a.unlockedAt, lang)}</time></span>}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </Window>
+))}

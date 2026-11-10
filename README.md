@@ -18,6 +18,7 @@ The site rebuilds itself **every day** from my GitHub account. Every public, non
 - **Windows:** – minimises to the taskbar, □ (or double-click the title) maximises, small windows can be dragged on large screens.
 - **Snake** on the contribution calendar, the **bus game** (top bar), a **screensaver** after a minute idle and a short **boot screen** on the first visit.
 - **Pages:** home, `/projects/`, `/about/`, `/activity/` (htop, snake, git log), `/uses/`, `/timeline/`, `/guestbook/` (giscus + GitHub Discussions) and `/contact/` — all in the top bar, or in the Apps menu on smaller screens.
+- **From the GitHub profile:** stats and streaks, GitHub achievements, sponsoring, social links and public contributions to other repos (`scripts/github-profile.mjs`).
 - A few **hidden achievements**. Some are typed, some are pressed, one is lost. 🏆
 
 Scripts live in `src/scripts/` (one module per feature, loaded on demand); their texts are in `src/i18n/index.ts` under `kos`.

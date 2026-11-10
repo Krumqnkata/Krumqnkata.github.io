@@ -747,3 +747,42 @@ h1, h2, h3, .art strong, .notfound .code { font-synthesis: none; }
 @media (max-width: 1499px) { .clock { display: none; } .palette-btn .kbd { display: none; } }
 .apps-btn .apps-label { font: 600 12.5px var(--mono); }
 @media (max-width: 520px) { .apps-btn .apps-label { display: none; } }
+
+/* ---------- GitHub profile pieces ---------- */
+.gap { height: 22px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); gap: 10px; margin: 0; }
+.tile-stat { display: flex; flex-direction: column-reverse; gap: 4px; padding: 14px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); }
+.tile-stat dd { margin: 0; font: 700 26px/1.1 var(--mono); color: var(--text); display: flex; align-items: center; gap: 6px; }
+.tile-stat dt { font: 500 12px var(--mono); color: var(--muted); }
+.tile-stat.hot { border-color: color-mix(in srgb, var(--clay) 60%, transparent); background: var(--accent-soft); }
+.tile-stat.hot .i { width: 22px; height: 22px; color: var(--copper); }
+.badge-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
+.badge-card { display: grid; justify-items: center; text-align: center; gap: 6px; padding: 18px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); text-decoration: none; height: 100%; }
+.badge-card:hover { border-color: var(--accent); transform: translateY(-2px); transition: transform .2s; }
+.badge-card strong { font: 400 19px/1.2 var(--pixel); }
+.badge-text { font-size: 13.5px; color: var(--text-soft); }
+.badge-date { font: 500 11.5px var(--mono); color: var(--muted); }
+.badge-img { position: relative; display: inline-block; }
+.badge-img img { width: 96px; height: 96px; display: block; filter: drop-shadow(0 6px 10px rgb(0 0 0 / 25%)); }
+.tier { position: absolute; right: -4px; bottom: 2px; font: 700 11px var(--mono); padding: 1px 6px; border-radius: 999px; background: #a8854a; color: #fefae0; border: 1px solid #fefae0; }
+.tier-silver { background: #6f7a80; } .tier-gold { background: #8a6a12; }
+.badges-strip { margin-top: 18px; }
+.badges-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+.badges-row a { position: relative; display: inline-block; }
+.badges-row img { width: 56px; height: 56px; display: block; }
+.badges-more { font-size: 13px; }
+.sponsor { margin-top: 18px; }
+.sponsor p { color: var(--text-soft); margin-bottom: 10px; }
+.sponsor ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.sponsor a { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); text-decoration: none; }
+.sponsor a:hover { border-color: var(--accent); }
+.sponsor img { border-radius: 50%; }
+.sponsor span { display: grid; line-height: 1.2; }
+.sponsor small { font: 500 11.5px var(--mono); color: var(--muted); }
+.contrib-grid { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.contrib-grid .avatar { border-radius: 50%; }
+.socials { justify-content: center; }
+.social-icons { display: inline-flex; gap: 8px; margin-left: 8px; vertical-align: middle; }
+.social-icons a { display: inline-flex; color: var(--text-soft); }
+.social-icons a:hover { color: var(--accent); }
+.social-icons .i { width: 16px; height: 16px; }

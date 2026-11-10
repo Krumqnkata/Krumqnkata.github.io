@@ -8,6 +8,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sanitizeHtml from 'sanitize-html';
 import config from '../src/data/portfolio.config.ts';
+import { githubProfile, githubAchievements } from './github-profile.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'src', 'data', 'generated', 'projects.json');
@@ -402,6 +403,8 @@ async function main() {
   const user = await gh(`/users/${encodeURIComponent(OWNER)}`);
   const calendar = await contributions();
   const commits = await recentCommits(repos);
+  const [ghProfile, ghAchievements] = await Promise.all([githubProfile(OWNER, TOKEN), githubAchievements(OWNER)]);
+  console.log(`GitHub profile: ${ghProfile ? 'ok' : 'unavailable'}, ${ghAchievements.length} achievements.`);
   const payload = {
     owner: OWNER,
     generatedAt: new Date().toISOString(),
@@ -414,6 +417,7 @@ async function main() {
     },
     contributions: calendar,
     recentCommits: commits,
+    github: { profile: ghProfile, achievements: ghAchievements },
     projects,
   };
   await mkdir(dirname(OUT), { recursive: true });
