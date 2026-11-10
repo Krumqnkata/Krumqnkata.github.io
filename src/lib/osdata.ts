@@ -19,13 +19,11 @@ export function osData(lang: Lang, altPath: string) {
     generatedAt,
     totals: { projects: totals.projects, live: totals.live },
     pages: { uses: `${pre}/uses/`, timeline: `${pre}/timeline/`, guestbook: `${pre}/guestbook/` },
-    sections: [
-      { id: 'home', label: ws.home },
-      { id: 'projects', label: ws.projects },
-      { id: 'about', label: ws.about },
-      { id: 'activity', label: ws.activity },
-      { id: 'contact', label: ws.contact },
-    ],
+    sections: (['home', 'projects', 'about', 'activity', 'uses', 'timeline', 'guestbook', 'contact'] as const).map((id) => ({
+      id,
+      label: ws[id],
+      path: id === 'home' ? `${pre}/` : `${pre}/${id}/`,
+    })),
     about: d.about.body.map(strip),
     projects: projects.map((p) => ({
       slug: p.slug,

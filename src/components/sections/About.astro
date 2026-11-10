@@ -1,0 +1,42 @@
+---
+import Icon from '../Icon.astro';
+import Window from '../Window.astro';
+import Prompt from '../Prompt.astro';
+import config from '../../data/portfolio.config.ts';
+import { t, formatDate, type Lang } from '../../i18n/index.ts';
+import { languageColor } from '../../lib/projects.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+
+---
+  <section class="block" id="about" aria-labelledby="about-title">
+    <div class="wrap">
+      <Prompt dir="~" cmd="cat about.md" />
+      <Window title="~/about.md — vim">
+        <div class="about-grid">
+          <div>
+            <div class="section-head" style="margin-bottom: 16px"><h1 id="about-title">{d.about.title}</h1></div>
+            <div class="about-text">
+              {d.about.body.map((para) => <p set:html={para} />)}
+            </div>
+            <div class="panel beyond">
+              <h3>{d.about.beyondTitle}</h3>
+              <p set:html={d.about.beyond} />
+            </div>
+          </div>
+          <div class="panel">
+            <h3>apt list --installed</h3>
+            <dl class="toolkit">
+              {config.toolkit.map((group) => (
+                <div>
+                  <dt>{group.label[lang]}</dt>
+                  <dd>{group.items.map((item) => <span class="chip"><i class="dot" style={`background:${languageColor(item)}`} />{item}</span>)}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </Window>
+    </div>
+  </section>

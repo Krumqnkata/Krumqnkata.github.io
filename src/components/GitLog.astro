@@ -3,16 +3,17 @@
 import Window from './Window.astro';
 import { recentCommits, projectByRepo, languageColor } from '../lib/projects.ts';
 import { t, projectPath, formatDate, type Lang } from '../i18n/index.ts';
-interface Props { lang: Lang }
-const { lang } = Astro.props;
+interface Props { lang: Lang; limit?: number; more?: string }
+const { lang, limit = 15, more } = Astro.props;
+const commits = recentCommits.slice(0, limit);
 const g = t(lang).kos.gitlog;
 ---
-<Window class="gitlog" title="git log --all --oneline" lang={lang}>
+<Window class="gitlog" id={more ? undefined : 'gitlog'} title="git log --all --oneline" lang={lang}>
   <h3 class="gitlog-title">{g.title}</h3>
   <p class="gitlog-lead">{g.lead}</p>
-  {recentCommits.length === 0 ? <p class="empty">{g.empty}</p> : (
+  {commits.length === 0 ? <p class="empty">{g.empty}</p> : (
     <ol class="gitlog-list">
-      {recentCommits.map((c) => {
+      {commits.map((c) => {
         const p = projectByRepo.get(c.repo);
         return (
           <li>
@@ -27,4 +28,5 @@ const g = t(lang).kos.gitlog;
       })}
     </ol>
   )}
+  {more && <p class="gitlog-more"><a class="btn btn-ghost btn-sm" href={more}>git log --all →</a></p>}
 </Window>

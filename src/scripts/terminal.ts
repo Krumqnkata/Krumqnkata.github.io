@@ -74,15 +74,7 @@ export function initTerminal(root: HTMLElement) {
         grid(d.projects.map((p) => link(`${p.name}/`, p.page)));
         print(muted(s.lsTip));
       } else if (!target || target === '~') {
-        grid([
-          link('about.md', `${d.home}#about`),
-          link('projects/', `${d.home}#projects`),
-          link('activity/', `${d.home}#activity`),
-          link('contact/', `${d.home}#contact`),
-          link('uses.md', d.pages.uses),
-          link('timeline/', d.pages.timeline),
-          link('guestbook/', d.pages.guestbook),
-        ]);
+        grid(d.sections.filter((x) => x.id !== 'home').map((x) => link(x.id === 'about' || x.id === 'uses' ? `${x.id}.md` : `${x.id}/`, x.path)));
       } else {
         const p = findProject(target);
         if (p) commands.cat([p.name], '');
@@ -93,16 +85,15 @@ export function initTerminal(root: HTMLElement) {
       const target = (args[0] || '~').replace(/\/$/, '');
       if (target === '~' || target === '..' || target === '/') {
         setCwd('~');
-        go(`${d.home}#home`);
+        go(d.home);
         return;
       }
-      if (sectionIds.includes(target)) {
-        setCwd(`~/${target}`);
-        print([muted(`${s.going} `), `~/${target}`]);
-        go(`${d.home}#${target}`);
+      const sec = d.sections.find((x) => x.id === target.replace(/\.md$/, ''));
+      if (sec) {
+        print([muted(`${s.going} `), `~/${sec.id}`]);
+        go(sec.path);
         return;
       }
-      if (['uses', 'timeline', 'guestbook'].includes(target)) return go(d.pages[target as 'uses']);
       const p = findProject(target);
       if (p) {
         print([muted(`${s.going} `), `~/projects/${p.name}`]);
@@ -114,6 +105,7 @@ export function initTerminal(root: HTMLElement) {
       if (!target) return print(s.catUsage, 'tty-err');
       if (/^about(\.md)?$/.test(target)) {
         for (const para of d.about) print(para);
+        print(link('→ about', d.sections.find((x) => x.id === 'about')!.path));
         return;
       }
       if (/^uses(\.md)?$/.test(target)) return go(d.pages.uses);
@@ -179,7 +171,7 @@ export function initTerminal(root: HTMLElement) {
       if (btn) {
         btn.scrollIntoView({ block: 'center' });
         btn.click();
-      } else go(`${d.home}#activity`);
+      } else go(`${d.sections.find((x) => x.id === 'activity')!.path}?play=snake`);
     },
     achievements() {
       const got = found();
@@ -266,7 +258,7 @@ export function initTerminal(root: HTMLElement) {
     let pool: string[];
     if (parts.length <= 1) pool = Object.keys(commands);
     else if (parts[0] === 'man') pool = Object.keys(commands);
-    else if (parts[0] === 'cd') pool = [...sectionIds, 'uses', 'timeline', 'guestbook', ...projectNames];
+    else if (parts[0] === 'cd') pool = [...sectionIds, ...projectNames];
     else if (parts[0] === 'cat') pool = ['about.md', ...projectNames];
     else if (parts[0] === 'theme') pool = ['light', 'dark'];
     else if (parts[0] === 'lang') pool = ['bg', 'en'];

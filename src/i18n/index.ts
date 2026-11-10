@@ -80,7 +80,8 @@ const en = {
     win: 'All bugs fixed — ship it! 🚀',
   },
   os: {
-    workspaces: { home: 'home', projects: 'projects', about: 'about', activity: 'activity', contact: 'contact' },
+    workspaces: { home: 'home', projects: 'projects', about: 'about', activity: 'activity', uses: 'uses', timeline: 'timeline', guestbook: 'guestbook', contact: 'contact' },
+    apps: 'Apps',
     workspacesLabel: 'Sections',
     clock: 'Local time in Stara Zagora',
     skip: 'Skip to content',
@@ -260,7 +261,8 @@ const bg: Dict = {
     win: 'Всички бъгове са оправени — пускай! 🚀',
   },
   os: {
-    workspaces: { home: 'начало', projects: 'проекти', about: 'за мен', activity: 'активност', contact: 'контакт' },
+    workspaces: { home: 'начало', projects: 'проекти', about: 'за мен', activity: 'активност', uses: 'инструменти', timeline: 'хронология', guestbook: 'гости', contact: 'контакт' },
+    apps: 'Приложения',
     workspacesLabel: 'Секции',
     clock: 'Местно време в Стара Загора',
     skip: 'Към съдържанието',

@@ -8,7 +8,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const k = t(lang).kos.pages.uses;
 ---
-<Base lang={lang} title={k.title} description={k.lead} altPath={`${prefix(other(lang))}/uses/`}>
+<Base lang={lang} title={k.title} description={k.lead} altPath={`${prefix(other(lang))}/uses/`} page='uses'>
   <div class="wrap">
     <header class="page-head">
       <Prompt dir="~" cmd={k.cmd} />

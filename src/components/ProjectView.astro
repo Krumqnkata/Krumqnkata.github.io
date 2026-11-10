@@ -15,9 +15,9 @@ const single = p.images.length === 1;
 const path = primary ? `~/projects/${primary.name}` : `~/projects/${p.slug}`;
 const shots = p.images.map((img, i) => ({ ...img, alt: shotAlt(p, lang, i, img.alt) }));
 ---
-<Base lang={lang} title={p.title[lang]} description={p.description[lang]} altPath={projectPath(other(lang), p.slug)} image={p.cover}>
+<Base lang={lang} title={p.title[lang]} description={p.description[lang]} altPath={projectPath(other(lang), p.slug)} image={p.cover} page="projects">
   <div class="wrap">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href={`${homePath(lang)}#all`}><Icon name="back" />cd ..</a> <span aria-hidden="true" style="color:var(--muted)">· {path}</span><span class="sr-only">{d.project.back}</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href={`${homePath(lang)}projects/`}><Icon name="back" />cd ..</a> <span aria-hidden="true" style="color:var(--muted)">· {path}</span><span class="sr-only">{d.project.back}</span></nav>
 
     <header class="phead">
       <div class="badges">

@@ -29,11 +29,14 @@ const k = d.kos;
 const pre = lang === 'en' ? '' : '/bg';
 const krumosJson = JSON.stringify(osData(lang, altPath)).replace(/</g, '\\u003c');
 const workspaces = [
-  { n: 1, id: 'home', label: ws.home },
-  { n: 2, id: 'projects', label: ws.projects },
-  { n: 3, id: 'about', label: ws.about },
-  { n: 4, id: 'activity', label: ws.activity },
-  { n: 5, id: 'contact', label: ws.contact },
+  { n: 1, id: 'home', path: `${pre}/`, label: ws.home },
+  { n: 2, id: 'projects', path: `${pre}/projects/`, label: ws.projects },
+  { n: 3, id: 'about', path: `${pre}/about/`, label: ws.about },
+  { n: 4, id: 'activity', path: `${pre}/activity/`, label: ws.activity },
+  { n: 5, id: 'uses', path: `${pre}/uses/`, label: ws.uses },
+  { n: 6, id: 'timeline', path: `${pre}/timeline/`, label: ws.timeline },
+  { n: 7, id: 'guestbook', path: `${pre}/guestbook/`, label: ws.guestbook },
+  { n: 8, id: 'contact', path: `${pre}/contact/`, label: ws.contact },
 ];
 ---
 <!doctype html>
@@ -79,9 +82,13 @@ const workspaces = [
           <img src="/favicon.svg" alt="" width="22" height="22" />
           <span class="user-host"><span>krum</span><span class="at">@</span><span class="host">stara-zagora</span></span>
         </a>
-        <nav class="workspaces" aria-label={d.os.workspacesLabel}>
+        <button class="tray-btn apps-btn" type="button" aria-expanded="false" aria-controls="ws-nav" data-apps title={d.os.apps} aria-label={d.os.apps}>
+          <svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="10" y="3" width="5" height="5" rx="1"/><rect x="17" y="3" width="5" height="5" rx="1"/><rect x="3" y="10" width="5" height="5" rx="1"/><rect x="10" y="10" width="5" height="5" rx="1"/><rect x="17" y="10" width="5" height="5" rx="1"/><rect x="3" y="17" width="5" height="5" rx="1"/><rect x="10" y="17" width="5" height="5" rx="1"/><rect x="17" y="17" width="5" height="5" rx="1"/></svg>
+          <span class="apps-label">{d.os.apps}</span>
+        </button>
+        <nav class="workspaces" id="ws-nav" aria-label={d.os.workspacesLabel}>
           {workspaces.map((w) => (
-            <a href={`${home}#${w.id}`} data-ws={w.id} aria-label={`${w.n}: ${w.label}`}><b aria-hidden="true">{w.n}</b><span>{w.label}</span></a>
+            <a href={w.path} data-ws={w.id} aria-current={page === w.id ? 'page' : undefined} title={w.label}><b aria-hidden="true">{w.n}</b><span>{w.label}</span></a>
           ))}
         </nav>
         <div class="taskbar" data-taskbar hidden aria-label={k.win.taskbar} role="group"></div>
@@ -149,21 +156,20 @@ const workspaces = [
           } catch (e) {}
         }
         if (clock) { tick(); setInterval(tick, 20000); }
-        // Highlight the workspace of the section in view.
-        var links = Array.prototype.slice.call(document.querySelectorAll('[data-ws]'));
-        if (!('IntersectionObserver' in window)) return;
-        var sections = links.map(function (a) { return document.getElementById(a.dataset.ws); }).filter(Boolean);
-        if (!sections.length) return;
-        var io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (!e.isIntersecting) return;
-            links.forEach(function (a) {
-              if (a.dataset.ws === e.target.id) a.setAttribute('aria-current', 'true');
-              else a.removeAttribute('aria-current');
-            });
+        // Apps menu (phones): the page list opens as a panel.
+        var apps = document.querySelector('[data-apps]');
+        var nav = document.getElementById('ws-nav');
+        if (apps && nav) {
+          var setOpen = function (open) {
+            nav.classList.toggle('open', open);
+            apps.setAttribute('aria-expanded', String(open));
+          };
+          apps.addEventListener('click', function (e) { e.stopPropagation(); setOpen(!nav.classList.contains('open')); });
+          document.addEventListener('click', function (e) { if (!nav.contains(e.target)) setOpen(false); });
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && nav.classList.contains('open')) { setOpen(false); apps.focus(); }
           });
-        }, { rootMargin: '-45% 0px -50% 0px' });
-        sections.forEach(function (s) { io.observe(s); });
+        }
       })();
     </script>
   </body>

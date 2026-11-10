@@ -13,11 +13,10 @@ function items(): Item[] {
   const g = s.groups;
   const a = s.actions;
   const list: Item[] = [];
-  for (const sec of d.sections) list.push({ group: g.sections, label: sec.label, detail: `#${sec.id}`, keywords: sec.id, run: () => go(`${d.home}#${sec.id}`) });
-  for (const [key, path] of Object.entries(d.pages)) {
-    const page = d.s.pages[key as 'uses'];
-    list.push({ group: g.pages, label: page.title, detail: page.cmd, keywords: key, run: () => go(path) });
-  }
+  d.sections.forEach((sec, i) => {
+    const page = d.s.pages[sec.id as 'uses'];
+    list.push({ group: g.pages, label: `${i + 1} · ${sec.label}`, detail: page?.cmd ?? sec.path, keywords: `${sec.id} ${page?.title ?? ''}`, run: () => go(sec.path) });
+  });
   for (const p of d.projects) {
     list.push({ group: g.projects, label: p.title, detail: [p.cat, p.lang].filter(Boolean).join(' · '), keywords: `${p.name} ${p.slug} ${p.stack.join(' ')}`, run: () => go(p.page) });
   }
@@ -27,12 +26,12 @@ function items(): Item[] {
     { group: g.actions, label: a.lang, keywords: 'language lang bg en език', run: () => (location.href = d.altPath) },
     { group: g.actions, label: a.terminal, keywords: 'terminal shell bash терминал', run: () => {
       const input = document.querySelector<HTMLInputElement>('[data-tty-in]');
-      if (input) { input.scrollIntoView({ block: 'center' }); input.focus(); } else go(`${d.home}#home`);
+      if (input) { input.scrollIntoView({ block: 'center' }); input.focus(); } else go(d.home);
     } },
     { group: g.actions, label: a.game, keywords: 'game bus play игра автобус', run: click('[data-game-toggle]') },
     { group: g.actions, label: a.snake, keywords: 'snake game змия игра', run: () => {
       const btn = document.querySelector<HTMLElement>('[data-snake-play]');
-      if (btn) { btn.scrollIntoView({ block: 'center' }); btn.click(); } else go(`${d.home}#activity`);
+      if (btn) { btn.scrollIntoView({ block: 'center' }); btn.click(); } else go(`${d.sections.find((x) => x.id === 'activity')!.path}?play=snake`);
     } },
     { group: g.actions, label: a.screensaver, keywords: 'screensaver idle скрийнсейвър', run: async () => (await import('./screensaver.ts')).startScreensaver() },
     { group: g.actions, label: a.reboot, keywords: 'reboot restart boot рестарт', run: async () => (await import('./boot.ts')).boot(true) },

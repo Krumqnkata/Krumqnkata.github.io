@@ -1,0 +1,26 @@
+---
+import Icon from '../Icon.astro';
+import Window from '../Window.astro';
+import Prompt from '../Prompt.astro';
+import config from '../../data/portfolio.config.ts';
+import { t, formatDate, type Lang } from '../../i18n/index.ts';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const pre = lang === 'en' ? '' : '/bg';
+---
+  <section class="block" id="contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <Prompt dir="~" cmd={`mail ${config.email}`} />
+      <Window class="contact" title="~/contact — mail">
+        <h1 id="contact-title">{d.contact.title}</h1>
+        <p>{d.contact.body}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={`mailto:${config.email}`}><Icon name="mail" />{d.contact.email}</a>
+          <a class="btn btn-ghost" href={`https://github.com/${config.owner}`} target="_blank" rel="noopener"><Icon name="github" />GitHub</a>
+        </div>
+        <p class="mono" style="margin: 18px auto 0; font-size: 14px">{config.email}</p>
+      </Window>
+    </div>
+  </section>

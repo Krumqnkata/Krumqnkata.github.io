@@ -1,0 +1,114 @@
+---
+import Icon from '../Icon.astro';
+import Window from '../Window.astro';
+import Prompt from '../Prompt.astro';
+import config from '../../data/portfolio.config.ts';
+import { t, formatDate, type Lang } from '../../i18n/index.ts';
+import ProjectCard from '../ProjectCard.astro';
+import { projects, categoriesInUse } from '../../lib/projects.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const counts = Object.fromEntries(categoriesInUse.map((c) => [c, projects.filter((p) => p.category === c).length]));
+const initial = config.initialVisible;
+const hiddenCount = Math.max(0, projects.length - initial);
+---
+    <section class="block" id="all" aria-labelledby="all-title">
+      <div class="wrap">
+        <Prompt dir="~/projects" cmd="ls -la --sort=time" />
+        <Window title="~/projects — files">
+          <div class="section-head">
+            <div>
+              <h1 id="all-title">{d.all} <span style="color: var(--muted); font-size: .6em">({projects.length})</span></h1>
+              <p>{d.allLead}</p>
+            </div>
+          </div>
+          <div class="toolbar">
+            <label class="search">
+              <span class="sr-only">{d.search}</span>
+              <Icon name="search" />
+              <input type="search" placeholder={d.search} data-search autocomplete="off" />
+            </label>
+            <label class="sort">
+              <span class="sr-only">{d.sort.label}</span>
+              <select data-sort>
+                <option value="recent">{d.sort.recent}</option>
+                <option value="stars">{d.sort.stars}</option>
+                <option value="name">{d.sort.name}</option>
+              </select>
+            </label>
+          </div>
+          <div class="filters" role="group" aria-label={d.sort.label}>
+            <button type="button" aria-pressed="true" data-filter="all">{d.filterAll}<span class="n">{projects.length}</span></button>
+            {categoriesInUse.map((c) => (
+              <button type="button" aria-pressed="false" data-filter={c}>{d.categories[c]}<span class="n">{counts[c]}</span></button>
+            ))}
+          </div>
+          <div class="grid" id="project-grid" data-grid data-initial={initial}>
+            {projects.map((p) => <ProjectCard project={p} lang={lang} />)}
+          </div>
+          <p class="empty" data-empty hidden role="status">{d.noResults}</p>
+          <div class="more-row">
+            <button class="btn btn-ghost" type="button" data-more aria-expanded="false" aria-controls="project-grid" hidden
+              data-show={`${d.more.show} (${hiddenCount})`} data-less={d.more.less}>{d.more.show} ({hiddenCount})</button>
+          </div>
+        </Window>
+      </div>
+    </section>
+  <script is:inline>
+    (function () {
+      var grid = document.querySelector('[data-grid]');
+      if (!grid) return;
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('[data-card]'));
+      var input = document.querySelector('[data-search]');
+      var sort = document.querySelector('[data-sort]');
+      var empty = document.querySelector('[data-empty]');
+      var more = document.querySelector('[data-more]');
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
+      var initial = +grid.dataset.initial || 9;
+      var state = { q: '', cat: 'all', sort: 'recent', expanded: false };
+
+      function apply(focusIndex) {
+        var words = state.q.toLowerCase().split(/\s+/).filter(Boolean);
+        var browsing = state.cat === 'all' && !words.length;
+        var sorted = cards.slice().sort(function (a, b) {
+          if (state.sort === 'stars') return (+b.dataset.stars - +a.dataset.stars) || b.dataset.updated.localeCompare(a.dataset.updated);
+          if (state.sort === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+          return (+a.dataset.minor - +b.dataset.minor) || b.dataset.updated.localeCompare(a.dataset.updated);
+        });
+        var matches = 0;
+        sorted.forEach(function (card) {
+          grid.appendChild(card);
+          var text = card.dataset.search;
+          var match = (state.cat === 'all' || card.dataset.category === state.cat) &&
+            words.every(function (w) { return text.indexOf(w) !== -1; });
+          if (match) matches++;
+          card.hidden = !(match && (!browsing || state.expanded || matches <= initial));
+        });
+        empty.hidden = matches !== 0;
+        more.hidden = !browsing || cards.length <= initial;
+        more.setAttribute('aria-expanded', String(state.expanded));
+        more.textContent = state.expanded ? more.dataset.less : more.dataset.show;
+        if (focusIndex != null) {
+          var target = sorted.filter(function (c) { return !c.hidden; })[focusIndex];
+          var link = target && target.querySelector('h3 a');
+          if (link) link.focus();
+        }
+      }
+
+      input.addEventListener('input', function () { state.q = input.value; apply(); });
+      sort.addEventListener('change', function () { state.sort = sort.value; apply(); });
+      more.addEventListener('click', function () {
+        state.expanded = !state.expanded;
+        apply(state.expanded ? initial : null);
+      });
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.cat = btn.dataset.filter;
+          buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+          apply();
+        });
+      });
+      apply();
+    })();
+  </script>

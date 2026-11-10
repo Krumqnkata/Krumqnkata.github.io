@@ -1,0 +1,83 @@
+---
+import Icon from '../Icon.astro';
+import Window from '../Window.astro';
+import Prompt from '../Prompt.astro';
+import config from '../../data/portfolio.config.ts';
+import { t, formatDate, type Lang } from '../../i18n/index.ts';
+import { totals, generatedAt, profile } from '../../lib/projects.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const avatar = `${profile.avatar}${profile.avatar.includes('?') ? '&' : '?'}s=640`;
+const pre = lang === 'en' ? '' : '/bg';
+---
+  <section class="hero" id="home" aria-labelledby="hero-title">
+    <div class="wrap">
+      <Window class="term" title="krum@stara-zagora: ~ — bash" drag>
+        <p class="line" aria-hidden="true"><span class="u">krum@stara-zagora</span>:<span class="d">~</span>$ <span class="c typed">whoami</span><span class="cursor"></span></p>
+        <h1 id="hero-title">{d.hero.hello} <em>{d.hero.name}</em>.</h1>
+        <p class="handle">@{d.hero.handle} · Python · Java · Web · Linux · 3D</p>
+        <p class="lead" set:html={d.hero.lead} />
+        <div class="hero-actions">
+          <a class="btn btn-primary" href={`${pre}/projects/`}>{d.hero.ctaProjects}<Icon name="arrow" /></a>
+          <a class="btn btn-ghost" href={`https://github.com/${config.owner}`} target="_blank" rel="noopener"><Icon name="github" />{d.hero.ctaGithub}</a>
+          <a class="btn btn-ghost" href={`mailto:${config.email}`}><Icon name="mail" />{d.contact.email}</a>
+        </div>
+        <div class="tty" data-terminal>
+          <div class="tty-out" data-tty-out role="log" aria-live="polite"></div>
+          <form class="tty-line" data-tty-form>
+            <label for="tty-in" class="tty-prompt"><span class="u">krum@stara-zagora</span>:<span class="d" data-tty-cwd>~</span>$</label>
+            <input id="tty-in" data-tty-in type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" aria-label={d.kos.term.label} placeholder="help" />
+          </form>
+          <div class="tty-quick" role="group" aria-label={d.kos.term.quick}>
+            {['help', 'ls projects', 'neofetch', 'achievements'].map((c) => <button type="button" class="chip" data-tty-run={c}>{c}</button>)}
+          </div>
+        </div>
+      </Window>
+      <div class="hero-side">
+        <Window as="figure" class="portrait wait" title="krum.png — image viewer" drag>
+          <noscript><style>.portrait.wait .portrait-print img { clip-path: none !important; } .nozzle { display: none; }</style></noscript>
+          <div class="portrait-print">
+            <img src={avatar} alt={d.hero.photoAlt} width="320" height="320" fetchpriority="high" />
+            <span class="nozzle" aria-hidden="true"></span>
+          </div>
+          <figcaption><span>krum.stl</span><b>{d.hero.printed}</b></figcaption>
+        </Window>
+        <Window class="neofetch" title="neofetch" drag>
+          <pre aria-hidden="true">{` ██╗  ██╗
+ ██║ ██╔╝
+ █████╔╝
+ ██╔═██╗
+ ██║  ██╗
+ ╚═╝  ╚═╝`}</pre>
+          <dl>
+            <div class="who"><dt class="sr-only">user</dt><dd>krum@stara-zagora</dd></div>
+            <div class="rule" aria-hidden="true"><dd>-----------------</dd></div>
+            <div><dt>{d.neofetch.os}:</dt><dd>KrumOS 26.11</dd></div>
+            <div><dt>{d.neofetch.host}:</dt><dd>{d.neofetch.hostValue}</dd></div>
+            <div><dt>{d.neofetch.shell}:</dt><dd>python · ts · java</dd></div>
+            <div><dt>{d.neofetch.projects}:</dt><dd>{totals.projects}</dd></div>
+            <div><dt>{d.neofetch.live}:</dt><dd>{totals.live}</dd></div>
+            <div><dt>{d.neofetch.uptime}:</dt><dd><time datetime={generatedAt}>{formatDate(generatedAt, lang, { day: 'numeric', month: 'short' })}</time></dd></div>
+          </dl>
+          <div class="swatches" aria-hidden="true" style="grid-column: 1 / -1">
+            {['#283618', '#606c38', '#fefae0', '#dda15e', '#bc6c25'].map((c) => <i style={`background:${c}`}></i>)}
+          </div>
+        </Window>
+      </div>
+    </div>
+  </section>
+  <script is:inline>
+    (function () {
+      // Start the "3D print" of the portrait when it scrolls into view.
+      var portrait = document.querySelector('.portrait');
+      if (!portrait) return;
+      if (!('IntersectionObserver' in window)) { portrait.classList.replace('wait', 'go'); return; }
+      var io = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) { portrait.classList.replace('wait', 'go'); io.disconnect(); }
+      }, { threshold: 0.35 });
+      io.observe(portrait);
+    })();
+    // Show the most recent weeks first on narrow screens.
+    document.querySelectorAll('.cal-wrap').forEach(function (el) { el.scrollLeft = el.scrollWidth; });
+  </script>

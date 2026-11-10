@@ -1,0 +1,88 @@
+---
+import Icon from '../Icon.astro';
+import Window from '../Window.astro';
+import Prompt from '../Prompt.astro';
+import config from '../../data/portfolio.config.ts';
+import { t, formatDate, type Lang } from '../../i18n/index.ts';
+import GitLog from '../GitLog.astro';
+import { totals, languageColor, contributions } from '../../lib/projects.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+// htop meters: main language per project
+const meters = totals.languageCounts.slice(0, 6);
+const maxMeter = meters[0]?.[1] || 1;
+
+// Contribution calendar
+const CELL = 11, GAP = 3;
+const weeks = contributions?.weeks ?? [];
+const nonZero = weeks.flat().map((day) => day.count).filter((n) => n > 0).sort((a, b) => a - b);
+const q = (p: number) => nonZero[Math.floor((nonZero.length - 1) * p)] ?? 1;
+const thresholds = [q(0.25), q(0.5), q(0.75)];
+const level = (n: number) => (n === 0 ? 0 : n <= thresholds[0] ? 1 : n <= thresholds[1] ? 2 : n <= thresholds[2] ? 3 : 4);
+const MONTHS = lang === 'bg'
+  ? ['ян', 'фев', 'мар', 'апр', 'май', 'юни', 'юли', 'авг', 'сеп', 'окт', 'ное', 'дек']
+  : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const months = weeks
+  .map((week, i) => ({ i, day: week[0] }))
+  .filter(({ i, day }) => day && Number(day.date.slice(8, 10)) <= 7 && i < weeks.length - 2)
+  .map(({ i, day }) => ({ x: i * (CELL + GAP), label: MONTHS[Number(day.date.slice(5, 7)) - 1] }));
+const calW = weeks.length * (CELL + GAP);
+const calH = 7 * (CELL + GAP) + 16;
+const sinceYear = totals.since ? new Date(totals.since).getFullYear() : '';
+---
+  <section class="block" id="activity" aria-labelledby="activity-title">
+    <div class="wrap">
+      <Prompt dir="~" cmd="htop --user=krum" />
+      <Window class="htop" title="htop — krum@stara-zagora">
+        <div class="section-head" style="margin-bottom: 0">
+          <div>
+            <h1 id="activity-title">{d.htop.title}</h1>
+            <p>{d.activity.lead}</p>
+          </div>
+        </div>
+        <div>
+          <h3 class="ps" style="margin-bottom: 10px">{d.htop.languages}</h3>
+          <div class="meters">
+            {meters.map(([name, n]) => (
+              <div class="meter" role="img" aria-label={`${name}: ${n}`}>
+                <span class="name">{name}</span>
+                <span class="track"><span class="fill" style={`width:${(n / maxMeter) * 100}%;color:${languageColor(name)}`}></span></span>
+                <span class="val">{n}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <p class="htop-stats">
+          <span><b>{d.htop.tasks}:</b> <strong>{d.htop.tasksValue(totals.projects, totals.live)}</strong></span>
+          <span><b>{d.htop.repos}:</b> <strong>{totals.repos}</strong></span>
+          {sinceYear && <span><b>{d.htop.since}:</b> <strong>{sinceYear}</strong></span>}
+          {contributions && <span><b>Σ</b> <strong>{d.htop.contributions(contributions.total)}</strong></span>}
+        </p>
+        {contributions && (
+          <div>
+            <div class="cal-wrap">
+              <svg class="cal" viewBox={`0 0 ${calW} ${calH}`} role="img" aria-label={`${d.htop.calendarLabel}: ${d.htop.contributions(contributions.total)}`}>
+                {months.map((m) => <text x={m.x} y="10" class="cal-month">{m.label}</text>)}
+                {weeks.map((week, wi) => week.map((day) => (
+                  <rect x={wi * (CELL + GAP)} y={16 + day.weekday * (CELL + GAP)} width={CELL} height={CELL} rx="2" class={`l${level(day.count)}`}>
+                    <title>{`${day.date}: ${day.count}`}</title>
+                  </rect>
+                )))}
+              </svg>
+            </div>
+            <div class="snake-row">
+              <button class="btn btn-ghost btn-sm" type="button" data-snake-play aria-pressed="false" hidden>▶ {d.kos.snake.play}</button>
+              <span class="snake-status mono" data-snake-status role="status" aria-live="polite"></span>
+            </div>
+            <div class="cal-legend" aria-hidden="true">{d.htop.less} <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> {d.htop.more}</div>
+          </div>
+        )}
+      </Window>
+      <div style="height: 22px"></div>
+      <GitLog lang={lang} />
+    </div>
+  </section>
+<script is:inline>
+  document.querySelectorAll('.cal-wrap').forEach(function (el) { el.scrollLeft = el.scrollWidth; });
+</script>

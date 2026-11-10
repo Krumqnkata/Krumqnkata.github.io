@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import Section from '../sections/AllProjects.astro';
+import { t, prefix, other, type Lang } from '../../i18n/index.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const slug = 'projects';
+---
+<Base lang={lang} title={d.nav.projects} altPath={`${prefix(other(lang))}/${slug}/`} page={slug}>
+  <div class="page-top"></div>
+  <Section lang={lang} />
+</Base>

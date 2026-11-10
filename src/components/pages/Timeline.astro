@@ -18,7 +18,7 @@ for (const p of sorted) {
   else groups.push({ month, items: [p] });
 }
 ---
-<Base lang={lang} title={k.title} description={k.lead} altPath={`${prefix(other(lang))}/timeline/`}>
+<Base lang={lang} title={k.title} description={k.lead} altPath={`${prefix(other(lang))}/timeline/`} page='timeline'>
   <div class="wrap">
     <header class="page-head">
       <Prompt dir="~/projects" cmd={k.cmd} />

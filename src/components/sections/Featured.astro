@@ -1,0 +1,27 @@
+---
+import Icon from '../Icon.astro';
+import Window from '../Window.astro';
+import Prompt from '../Prompt.astro';
+import config from '../../data/portfolio.config.ts';
+import { t, formatDate, type Lang } from '../../i18n/index.ts';
+import FeaturedCard from '../FeaturedCard.astro';
+import { featured } from '../../lib/projects.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+
+---
+<section class="block" id="featured" aria-labelledby="featured-title">
+      <div class="wrap">
+        <Prompt dir="~/projects" cmd="ls --featured" />
+        <div class="section-head">
+          <div>
+            <h2 id="featured-title">{d.featured}</h2>
+            <p>{d.featuredLead}</p>
+          </div>
+        </div>
+        <div class="featured-list">
+          {featured.map((p, i) => <FeaturedCard project={p} lang={lang} eager={i === 0} />)}
+        </div>
+      </div>
+    </section>

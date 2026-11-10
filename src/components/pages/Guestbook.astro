@@ -10,7 +10,7 @@ const d = t(lang);
 const k = d.kos.pages.guestbook;
 const g = config.giscus;
 ---
-<Base lang={lang} title={k.title} description={k.lead} altPath={`${prefix(other(lang))}/guestbook/`}>
+<Base lang={lang} title={k.title} description={k.lead} altPath={`${prefix(other(lang))}/guestbook/`} page='guestbook'>
   <div class="wrap">
     <header class="page-head">
       <Prompt dir="~" cmd={k.cmd} />

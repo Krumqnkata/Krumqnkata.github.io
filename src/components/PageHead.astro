@@ -1,0 +1,11 @@
+---
+// Shell prompt + pixel title + lead at the top of an inner page.
+import Prompt from './Prompt.astro';
+interface Props { dir: string; cmd: string; title: string; lead?: string }
+const { dir, cmd, title, lead } = Astro.props;
+---
+<header class="page-head wrap">
+  <Prompt dir={dir} cmd={cmd} />
+  <h1>{title}</h1>
+  {lead && <p>{lead}</p>}
+</header>

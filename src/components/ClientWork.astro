@@ -46,7 +46,7 @@ const host = p.live.replace(/^https?:\/\//, '').replace(/\/$/, '');
           <a class="btn btn-primary btn-sm" href={p.live} target="_blank" rel="noopener"><Icon name="external" />{host}</a>
           {p.links.map((l) => <a class="btn btn-ghost btn-sm" href={l.url} target="_blank" rel="noopener">{l.label[lang]}</a>)}
         </div>
-        <p class="client-cta">{d.client.cta} <a href="#contact">{d.client.ctaLink} →</a></p>
+        <p class="client-cta">{d.client.cta} <a href={`${lang === "en" ? "" : "/bg"}/contact/`}>{d.client.ctaLink} →</a></p>
       </div>
     </Window>
   </div>

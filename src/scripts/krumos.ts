@@ -39,6 +39,11 @@ if (snakeBtn) {
     if (!svg || !status) return;
     (await import('./snake.ts')).toggleSnake(svg, snakeBtn, status);
   });
+  // Arriving from the terminal or palette with ?play=snake starts the game.
+  if (new URLSearchParams(location.search).get('play') === 'snake') {
+    snakeBtn.scrollIntoView({ block: 'center' });
+    setTimeout(() => snakeBtn.click(), 400);
+  }
 }
 
 // ---- Secrets: Konami code, logo clicks, 404 ----
