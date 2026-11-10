@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import Window from '../Window.astro';
+import Prompt from '../Prompt.astro';
+import { projects, languageColor } from '../../lib/projects.ts';
+import { t, projectPath, prefix, other, formatDate, type Lang } from '../../i18n/index.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const k = d.kos.pages.timeline;
+const CAT: Record<string, string> = { web: '#7fa7b8', school: '#dda15e', desktop: '#c97b63', games: '#bc6c25', tools: '#606c38' };
+const sorted = [...projects].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+const groups: { month: string; items: typeof sorted }[] = [];
+for (const p of sorted) {
+  const month = formatDate(p.createdAt, lang, { month: 'long', year: 'numeric' });
+  const g = groups.at(-1);
+  if (g && g.month === month) g.items.push(p);
+  else groups.push({ month, items: [p] });
+}
+---
+<Base lang={lang} title={k.title} description={k.lead} altPath={`${prefix(other(lang))}/timeline/`}>
+  <div class="wrap">
+    <header class="page-head">
+      <Prompt dir="~/projects" cmd={k.cmd} />
+      <h1>{k.title}</h1>
+      <p>{k.lead}</p>
+    </header>
+    <Window title={`${k.cmd} — ${projects.length}`} lang={lang}>
+      <ol class="tl">
+        {groups.map((g) => (
+          <>
+            <li class="tl-month" aria-hidden="true">{g.month}</li>
+            {g.items.map((p) => (
+              <li class="tl-item" style={`--dot:${CAT[p.category]}`}>
+                <div class="tl-card">
+                  <div class="tl-head">
+                    <a href={projectPath(lang, p.slug)}>{p.title[lang]}</a>
+                    <span class="tl-meta">
+                      <time datetime={p.createdAt}>{formatDate(p.createdAt, lang)}</time>
+                      · {d.categories[p.category]}
+                      {p.primaryLanguage && <> · <span class="lang"><i style={`background:${languageColor(p.primaryLanguage)}`}></i>{p.primaryLanguage}</span></>}
+                    </span>
+                  </div>
+                  <p>{p.description[lang]}</p>
+                </div>
+              </li>
+            ))}
+          </>
+        ))}
+      </ol>
+    </Window>
+  </div>
+</Base>

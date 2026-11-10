@@ -274,3 +274,9 @@ export function shotAlt(p: Project, lang: 'en' | 'bg', index = 0, alt = '') {
   const base = lang === 'bg' ? `Екранна снимка на ${p.title.bg}` : `Screenshot of ${p.title.en}`;
   return index > 0 ? `${base} (${index + 1})` : base;
 }
+
+export interface Commit { sha: string; repo: string; message: string; date: string; url: string }
+export const recentCommits: Commit[] = ((data as { recentCommits?: Commit[] }).recentCommits ?? []).slice(0, 15);
+
+/** Repository name → project slug + title, for linking commits to project pages. */
+export const projectByRepo = new Map(projects.flatMap((p) => p.repos.map((r) => [r.name, p] as const)));

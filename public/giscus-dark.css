@@ -1,0 +1,31 @@
+/* giscus theme: KrumOS dark (Black Forest / Cornsilk / Sunlit Clay) */
+@import url('https://giscus.app/themes/dark.css');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Ubuntu:wght@400;500;700&display=swap');
+main {
+  --color-canvas-default: #212c13;
+  --color-canvas-overlay: #283618;
+  --color-canvas-inset: #1a2310;
+  --color-canvas-subtle: #283618;
+  --color-fg-default: #fefae0;
+  --color-fg-muted: #c3bf98;
+  --color-fg-subtle: #c3bf98;
+  --color-border-default: #606c38;
+  --color-border-muted: #364522;
+  --color-accent-fg: #dda15e;
+  --color-accent-emphasis: #dda15e;
+  --color-accent-muted: rgb(221 161 94 / 40%);
+  --color-accent-subtle: rgb(221 161 94 / 14%);
+  --color-btn-primary-bg: #dda15e;
+  --color-btn-primary-text: #1a2310;
+  --color-btn-primary-hover-bg: #ebba80;
+  --color-btn-bg: #283618;
+  --color-btn-text: #fefae0;
+  --color-btn-border: #606c38;
+  --color-btn-hover-bg: #2f3f1c;
+  --color-primer-border-active: #dda15e;
+  --color-segmented-control-bg: #1a2310;
+  --color-segmented-control-button-bg: #283618;
+  font-family: 'Ubuntu', system-ui, sans-serif;
+}
+main .gsc-comment-box-textarea, main code, main pre { font-family: 'Fira Code', monospace; }
+main .gsc-reactions-count, main .gsc-comments-count { font-family: 'Fira Code', monospace; }

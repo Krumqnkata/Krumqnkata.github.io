@@ -370,6 +370,42 @@ const config = {
     { label: { en: 'Audio & ML', bg: 'Аудио и ML' }, items: ['librosa', 'YAMNet', 'scikit-learn', 'WebSocket'] },
     { label: { en: 'Hardware', bg: 'Хардуер' }, items: ['Arduino', 'RFID', '3D printing'] },
   ] as { label: Text; items: string[] }[],
+
+  /** The /uses page. Each item: name + a short BG/EN note. */
+  uses: [
+    {
+      label: { en: 'Editor & terminal', bg: 'Редактор и терминал' },
+      items: [
+        { name: 'VS Code', note: { en: 'Main editor for everything.', bg: 'Основният ми редактор за всичко.' } },
+        { name: 'Git + GitHub', note: { en: 'Every project lives on GitHub; Actions build and deploy them.', bg: 'Всеки проект е в GitHub; Actions ги build-ват и пускат.' } },
+        { name: 'Fira Code', note: { en: 'Programming font with ligatures — also the font of this site’s terminal.', bg: 'Шрифт за програмиране с лигатури — и шрифтът на терминала в този сайт.' } },
+      ],
+    },
+    {
+      label: { en: 'Systems & servers', bg: 'Системи и сървъри' },
+      items: [
+        { name: 'Windows 11', note: { en: 'Desktop for development and desktop apps.', bg: 'Работната машина за разработка и настолни програми.' } },
+        { name: 'Linux / Debian', note: { en: 'Servers for my web projects, with Apache and systemd.', bg: 'Сървърите на уеб проектите ми, с Apache и systemd.' } },
+        { name: 'Docker', note: { en: 'Repeatable environments for services.', bg: 'Еднакви среди за услугите.' } },
+      ],
+    },
+    {
+      label: { en: 'Making things', bg: 'Майсторене' },
+      items: [
+        { name: '3D printer', note: { en: 'Prints, calibration and the reason Extruda exists.', bg: 'Принтиране, калибриране и причината Extruda да съществува.' } },
+        { name: 'Arduino + RFID', note: { en: 'Small hardware experiments.', bg: 'Малки хардуерни експерименти.' } },
+        { name: 'Audio editing', note: { en: 'Preparing sound for school projects and the bell.', bg: 'Подготовка на звук за училищни проекти и звънеца.' } },
+      ],
+    },
+  ] as { label: Text; items: { name: string; note: Text }[] }[],
+
+  /** giscus guestbook (GitHub Discussions on the site repository). */
+  giscus: {
+    repo: 'Krumqnkata/Krumqnkata.github.io',
+    repoId: 'R_kgDOVoikfg',
+    category: 'General',
+    categoryId: 'DIC_kwDOVoikfs4DKyoU',
+  },
 };
 
 export default config;

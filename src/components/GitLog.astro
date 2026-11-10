@@ -1,0 +1,30 @@
+---
+// "git log --all --oneline": latest commits across public repositories.
+import Window from './Window.astro';
+import { recentCommits, projectByRepo, languageColor } from '../lib/projects.ts';
+import { t, projectPath, formatDate, type Lang } from '../i18n/index.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const g = t(lang).kos.gitlog;
+---
+<Window class="gitlog" title="git log --all --oneline" lang={lang}>
+  <h3 class="gitlog-title">{g.title}</h3>
+  <p class="gitlog-lead">{g.lead}</p>
+  {recentCommits.length === 0 ? <p class="empty">{g.empty}</p> : (
+    <ol class="gitlog-list">
+      {recentCommits.map((c) => {
+        const p = projectByRepo.get(c.repo);
+        return (
+          <li>
+            <a class="sha" href={c.url} target="_blank" rel="noopener" aria-label={`commit ${c.sha}`}>{c.sha}</a>
+            {p
+              ? <a class="repo" href={projectPath(lang, p.slug)}><i style={`background:${languageColor(p.primaryLanguage)}`}></i>{c.repo}</a>
+              : <span class="repo">{c.repo}</span>}
+            <span class="msg">{c.message}</span>
+            <time datetime={c.date} data-rel title={formatDate(c.date, lang, { dateStyle: 'medium', timeStyle: 'short' } as Intl.DateTimeFormatOptions)}>{formatDate(c.date, lang, { day: 'numeric', month: 'short' })}</time>
+          </li>
+        );
+      })}
+    </ol>
+  )}
+</Window>

@@ -2,6 +2,8 @@
 // as platforms, and catches the bugs hiding between the projects.
 // Everything lives in document coordinates; the canvas is a fixed overlay.
 
+import { busy, unlock } from './os.ts';
+
 type Platform = { x1: number; x2: number; y: number };
 type Bug = { x: number; y: number; phase: number };
 type Spark = { x: number; y: number; vx: number; vy: number; life: number; color: string };
@@ -195,6 +197,7 @@ function setup(root: HTMLElement) {
         score++;
         scoreEl.textContent = `🐞 ${score}`;
         if (score % GOAL === 0) {
+          unlock('bugs');
           toast(t.win);
           burst(bus.x, bus.y - 20, colors.gold, 40);
         }
@@ -366,6 +369,7 @@ function setup(root: HTMLElement) {
   function start() {
     if (running) return;
     running = true;
+    busy.game = true;
     canvas = document.createElement('canvas');
     canvas.className = 'game-canvas';
     canvas.setAttribute('aria-hidden', 'true');
@@ -397,6 +401,7 @@ function setup(root: HTMLElement) {
   function stop() {
     if (!running) return;
     running = false;
+    busy.game = false;
     cancelAnimationFrame(raf);
     canvas?.remove();
     canvas = null;

@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Icon from '../components/Icon.astro';
 import config from '../data/portfolio.config.ts';
 import { generatedAt } from '../lib/projects.ts';
+import { osData } from '../lib/osdata.ts';
 import { t, homePath, other, formatDate, type Lang } from '../i18n/index.ts';
 
 interface Props {
@@ -12,8 +13,10 @@ interface Props {
   /** Path of this same page in the other language. */
   altPath: string;
   image?: string | null;
+  /** Page id for scripts, e.g. '404'. */
+  page?: string;
 }
-const { lang, title, description, altPath, image } = Astro.props;
+const { lang, title, description, altPath, image, page } = Astro.props;
 const d = t(lang);
 const fullTitle = title ? `${title} · Krum (Krumqnkata)` : d.siteTitle;
 const desc = description || d.siteDescription;
@@ -22,6 +25,9 @@ const alternate = new URL(altPath, config.siteUrl).href;
 const home = homePath(lang);
 const ogImage = image ? new URL(image, config.siteUrl).href : 'https://raw.githubusercontent.com/Krumqnkata/Krumqnkata/main/assets/header.svg';
 const ws = d.os.workspaces;
+const k = d.kos;
+const pre = lang === 'en' ? '' : '/bg';
+const krumosJson = JSON.stringify(osData(lang, altPath)).replace(/</g, '\\u003c');
 const workspaces = [
   { n: 1, id: 'home', label: ws.home },
   { n: 2, id: 'projects', label: ws.projects },
@@ -65,7 +71,7 @@ const workspaces = [
       })();
     </script>
   </head>
-  <body>
+  <body data-page={page}>
     <a class="skip" href="#main">{d.os.skip}</a>
     <header class="topbar">
       <div class="inner">
@@ -78,7 +84,12 @@ const workspaces = [
             <a href={`${home}#${w.id}`} data-ws={w.id} aria-label={`${w.n}: ${w.label}`}><b aria-hidden="true">{w.n}</b><span>{w.label}</span></a>
           ))}
         </nav>
+        <div class="taskbar" data-taskbar hidden aria-label={k.win.taskbar} role="group"></div>
         <div class="tray">
+          <button class="tray-btn trophy" type="button" data-trophy hidden title={k.secrets.chip} aria-label={k.secrets.chip}>🏆 <span data-trophy-count></span></button>
+          <button class="tray-btn palette-btn" type="button" data-palette-open title={k.palette.open} aria-label={k.palette.open} aria-keyshortcuts="Control+K /">
+            <Icon name="search" /><kbd class="kbd">Ctrl K</kbd>
+          </button>
           <div data-game data-on={d.game.on} data-off={d.game.off} data-win={d.game.win}>
             <button class="tray-btn game-btn" type="button" aria-pressed="false" aria-label={d.game.on} title={d.game.help} data-game-toggle>
               <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="15" rx="3"/><path d="M4 11h16M8 21l1-3M16 21l-1-3"/></svg>
@@ -102,6 +113,7 @@ const workspaces = [
         <span><span class="tag">[krumos]</span> <em>{d.footer.tagline}</em></span>
         <span>
           {d.footer.rebuilt} {formatDate(generatedAt, lang, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+          · <a href={`${pre}/uses/`}>uses</a> · <a href={`${pre}/timeline/`}>timeline</a> · <a href={`${pre}/guestbook/`}>guestbook</a>
           · <a href={`https://github.com/${config.owner}/${config.owner}.github.io`}>{d.footer.source}</a>
         </span>
       </div>
@@ -112,8 +124,9 @@ const workspaces = [
       <button type="button" data-pad="right" aria-label="Right">▶</button>
       <button type="button" data-pad="jump" aria-label="Jump">▲</button>
     </div>
+    <script type="application/json" id="krumos-data" set:html={krumosJson} />
     <script>
-      import '../scripts/game.ts';
+      import '../scripts/krumos.ts';
     </script>
     <script is:inline define:vars={{ locale: d.locale }}>
       (function () {

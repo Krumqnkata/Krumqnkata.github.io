@@ -353,6 +353,26 @@ async function contributions() {
   }
 }
 
+/** Latest commits by the owner in repositories pushed during the last 45 days. */
+async function recentCommits(repos) {
+  const since = Date.now() - 45 * 24 * 3600 * 1000;
+  const active = repos.filter((r) => Date.parse(r.pushed_at) > since);
+  const lists = await mapLimit(active, CONCURRENCY, async (repo) => {
+    const commits = await gh(`/repos/${repo.full_name}/commits?per_page=10`, { allowMissing: true });
+    if (!Array.isArray(commits)) return [];
+    return commits
+      .filter((c) => c.author?.type !== 'Bot' && (c.author?.login || '').toLowerCase() === OWNER.toLowerCase())
+      .map((c) => ({
+        sha: c.sha.slice(0, 7),
+        repo: repo.name,
+        message: (c.commit?.message || '').split(/\r?\n/)[0].slice(0, 120),
+        date: c.commit?.author?.date || c.commit?.committer?.date,
+        url: c.html_url,
+      }));
+  });
+  return lists.flat().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30);
+}
+
 async function mapLimit(items, limit, fn) {
   const results = new Array(items.length);
   let next = 0;
@@ -381,6 +401,7 @@ async function main() {
   });
   const user = await gh(`/users/${encodeURIComponent(OWNER)}`);
   const calendar = await contributions();
+  const commits = await recentCommits(repos);
   const payload = {
     owner: OWNER,
     generatedAt: new Date().toISOString(),
@@ -392,6 +413,7 @@ async function main() {
       url: user.html_url,
     },
     contributions: calendar,
+    recentCommits: commits,
     projects,
   };
   await mkdir(dirname(OUT), { recursive: true });

@@ -11,6 +11,17 @@ The site rebuilds itself **every day** from my GitHub account. Every public, non
 3. [Astro](https://astro.build) builds static pages: `/` and `/projects/<name>/` in English, `/bg/` and `/bg/projects/<name>/` in Bulgarian.
 4. [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) runs on every push, every day at 04:40 UTC, and on demand. It deploys the site to GitHub Pages.
 
+## KrumOS features
+
+- **Terminal** in the hero window: try `help`, `ls projects`, `open extruda`, `neofetch`, `theme light`. Tab completes, ↑↓ browse history.
+- **Command palette:** `Ctrl+K` or `/` jumps to any section, project, page or action.
+- **Windows:** – minimises to the taskbar, □ (or double-click the title) maximises, small windows can be dragged on large screens.
+- **Snake** on the contribution calendar, the **bus game** (top bar), a **screensaver** after a minute idle and a short **boot screen** on the first visit.
+- **git log** of recent commits, a **timeline** (`/timeline/`), **uses** (`/uses/`) and a **guestbook** (`/guestbook/`, giscus + GitHub Discussions).
+- A few **hidden achievements**. Some are typed, some are pressed, one is lost. 🏆
+
+Scripts live in `src/scripts/` (one module per feature, loaded on demand); their texts are in `src/i18n/index.ts` under `kos`.
+
 ## Adding or changing a project
 
 - **New public repository:** nothing to do, it shows up the next day. A good description, topics, a homepage link and screenshots in the README (or in `docs/screenshots/`) make its page better.

@@ -6,6 +6,7 @@ import Prompt from './Prompt.astro';
 import FeaturedCard from './FeaturedCard.astro';
 import ProjectCard from './ProjectCard.astro';
 import ClientWork from './ClientWork.astro';
+import GitLog from './GitLog.astro';
 import config from '../data/portfolio.config.ts';
 import { projects, featured, clientWork, totals, generatedAt, categoriesInUse, languageColor, profile, contributions } from '../lib/projects.ts';
 import { t, homePath, other, formatDate, type Lang } from '../i18n/index.ts';
@@ -43,7 +44,7 @@ const avatar = `${profile.avatar}${profile.avatar.includes('?') ? '&' : '?'}s=64
 <Base lang={lang} altPath={homePath(other(lang))} image={featured[0]?.cover}>
   <section class="hero" id="home" aria-labelledby="hero-title">
     <div class="wrap">
-      <Window class="term" title="krum@stara-zagora: ~ — bash">
+      <Window class="term" title="krum@stara-zagora: ~ — bash" drag>
         <p class="line" aria-hidden="true"><span class="u">krum@stara-zagora</span>:<span class="d">~</span>$ <span class="c typed">whoami</span><span class="cursor"></span></p>
         <h1 id="hero-title">{d.hero.hello} <em>{d.hero.name}</em>.</h1>
         <p class="handle">@{d.hero.handle} · Python · Java · Web · Linux · 3D</p>
@@ -53,9 +54,19 @@ const avatar = `${profile.avatar}${profile.avatar.includes('?') ? '&' : '?'}s=64
           <a class="btn btn-ghost" href={`https://github.com/${config.owner}`} target="_blank" rel="noopener"><Icon name="github" />{d.hero.ctaGithub}</a>
           <a class="btn btn-ghost" href={`mailto:${config.email}`}><Icon name="mail" />{d.contact.email}</a>
         </div>
+        <div class="tty" data-terminal>
+          <div class="tty-out" data-tty-out role="log" aria-live="polite"></div>
+          <form class="tty-line" data-tty-form>
+            <label for="tty-in" class="tty-prompt"><span class="u">krum@stara-zagora</span>:<span class="d" data-tty-cwd>~</span>$</label>
+            <input id="tty-in" data-tty-in type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" aria-label={d.kos.term.label} placeholder="help" />
+          </form>
+          <div class="tty-quick" role="group" aria-label={d.kos.term.quick}>
+            {['help', 'ls projects', 'neofetch', 'achievements'].map((c) => <button type="button" class="chip" data-tty-run={c}>{c}</button>)}
+          </div>
+        </div>
       </Window>
       <div class="hero-side">
-        <Window as="figure" class="portrait wait" title="krum.png — image viewer">
+        <Window as="figure" class="portrait wait" title="krum.png — image viewer" drag>
           <noscript><style>.portrait.wait .portrait-print img { clip-path: none !important; } .nozzle { display: none; }</style></noscript>
           <div class="portrait-print">
             <img src={avatar} alt={d.hero.photoAlt} width="320" height="320" fetchpriority="high" />
@@ -63,7 +74,7 @@ const avatar = `${profile.avatar}${profile.avatar.includes('?') ? '&' : '?'}s=64
           </div>
           <figcaption><span>krum.stl</span><b>{d.hero.printed}</b></figcaption>
         </Window>
-        <Window class="neofetch" title="neofetch">
+        <Window class="neofetch" title="neofetch" drag>
           <pre aria-hidden="true">{` ██╗  ██╗
  ██║ ██╔╝
  █████╔╝
@@ -221,10 +232,16 @@ const avatar = `${profile.avatar}${profile.avatar.includes('?') ? '&' : '?'}s=64
                 )))}
               </svg>
             </div>
+            <div class="snake-row">
+              <button class="btn btn-ghost btn-sm" type="button" data-snake-play aria-pressed="false" hidden>▶ {d.kos.snake.play}</button>
+              <span class="snake-status mono" data-snake-status role="status" aria-live="polite"></span>
+            </div>
             <div class="cal-legend" aria-hidden="true">{d.htop.less} <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> {d.htop.more}</div>
           </div>
         )}
       </Window>
+      <div style="height: 22px"></div>
+      <GitLog lang={lang} />
     </div>
   </section>
 

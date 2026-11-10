@@ -1,13 +1,30 @@
 ---
-// A desktop-style window: title bar with traffic-light dots and a body.
-interface Props { title: string; id?: string; class?: string; as?: 'section' | 'div' | 'article' | 'figure'; labelledby?: string }
-const { title, id, class: cls = '', as: Tag = 'div', labelledby } = Astro.props;
+// A desktop-style window: title bar with traffic-light dots, working
+// minimise / maximise / close buttons (src/scripts/windows.ts) and a body.
+import { t, type Lang } from '../i18n/index.ts';
+interface Props {
+  title: string;
+  id?: string;
+  class?: string;
+  as?: 'section' | 'div' | 'article' | 'figure';
+  labelledby?: string;
+  /** Can be dragged around on large screens. */
+  drag?: boolean;
+  lang?: Lang;
+}
+const { title, id, class: cls = '', as: Tag = 'div', labelledby, drag = false } = Astro.props;
+const lang: Lang = Astro.props.lang ?? (Astro.url.pathname.startsWith('/bg/') ? 'bg' : 'en');
+const w = t(lang).kos.win;
 ---
-<Tag class={`win ${cls}`} id={id} aria-labelledby={labelledby}>
-  <div class="win-bar" aria-hidden="true">
-    <span class="win-dots"><i></i><i></i><i></i></span>
+<Tag class={`win ${cls}`} id={id} aria-labelledby={labelledby} data-win={title} data-drag={drag ? '' : undefined}>
+  <div class="win-bar" data-win-bar>
+    <span class="win-dots" aria-hidden="true"><i></i><i></i><i></i></span>
     <span class="win-title">{title}</span>
-    <span class="win-ctrl">–□×</span>
+    <span class="win-ctrl">
+      <button type="button" data-win-act="min" aria-label={`${w.minimize}: ${title}`} title={w.minimize}>–</button>
+      <button type="button" data-win-act="max" aria-label={`${w.maximize}: ${title}`} title={w.maximize} data-label-max={w.maximize} data-label-restore={w.restore} aria-pressed="false">□</button>
+      <button type="button" data-win-act="close" aria-label={`${w.close}: ${title}`} title={w.close}>×</button>
+    </span>
   </div>
   <div class="win-body"><slot /></div>
 </Tag>

@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import Window from '../Window.astro';
+import Prompt from '../Prompt.astro';
+import config from '../../data/portfolio.config.ts';
+import { t, prefix, other, type Lang } from '../../i18n/index.ts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const k = t(lang).kos.pages.uses;
+---
+<Base lang={lang} title={k.title} description={k.lead} altPath={`${prefix(other(lang))}/uses/`}>
+  <div class="wrap">
+    <header class="page-head">
+      <Prompt dir="~" cmd={k.cmd} />
+      <h1>{k.title}</h1>
+      <p>{k.lead}</p>
+    </header>
+    <Window title="~/uses.md — vim" lang={lang}>
+      <div class="uses-grid">
+        {config.uses.map((group) => (
+          <section>
+            <h2>{group.label[lang]}</h2>
+            <ul>{group.items.map((it) => <li><b>{it.name}</b> — {it.note[lang]}</li>)}</ul>
+          </section>
+        ))}
+      </div>
+    </Window>
+  </div>
+</Base>
